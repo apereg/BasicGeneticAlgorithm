@@ -23,7 +23,7 @@ public class Main {
 
     private static final boolean DEBUG_MUTATE = true;
 
-    private static final boolean DEBUG_VALIDSOLUTION = true;
+    private static final boolean DEBUG_VALIDSOL = true;
 
     public static void main(String[] args) {
         Population population = new Population();
@@ -57,7 +57,7 @@ public class Main {
         return Main.DEBUG_EVALUATE;
     }
 
-    public static boolean getDebugGetBest() {
+    public static boolean getDebugGetbest() {
         return Main.DEBUG_GETBEST;
     }
 
@@ -73,8 +73,8 @@ public class Main {
         return Main.DEBUG_MUTATE;
     }
 
-    public static boolean getDebugValidSolution() {
-        return Main.DEBUG_VALIDSOLUTION;
+    public static boolean getDebugValidsol() {
+        return Main.DEBUG_VALIDSOL;
     }
 
 }

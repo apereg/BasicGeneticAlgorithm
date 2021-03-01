@@ -9,3 +9,5 @@ J
 src/com/adrip/ce/Main.java,5\8\587e51b38957c7dd4896fc108298d8b03dd99746
 P
  src/com/adrip/ce/Population.java,4\9\497746d7e62e2f0adb1a42c9afad5d4f6416ef72
+P
+ src/com/adrip/ce/Operations.java,7\8\784e6136611534708a09b9d897a4f0ef2c83b1ee
