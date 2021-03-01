@@ -29,7 +29,7 @@ public class Chromosome {
         StringBuilder str = new StringBuilder();
         for (Gene gene : geneChain)
             str.append(gene.toString()).append("-");
-        return str.deleteCharAt(str.length()).toString();
+        return str.deleteCharAt(str.length()-1).toString();
     }
 
 }
