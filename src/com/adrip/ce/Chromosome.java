@@ -28,7 +28,7 @@ public class Chromosome {
     public String toString() {
         StringBuilder str = new StringBuilder();
         for (Gene gene : geneChain)
-            str.append(gene.toString()).append("-");
+            str.append(gene.toString()).append("\t");
         return str.deleteCharAt(str.length()-1).toString();
     }
 

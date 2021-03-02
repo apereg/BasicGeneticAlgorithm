@@ -3,7 +3,9 @@ package com.adrip.ce;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import com.adrip.ce.Utils;
 import java.util.Locale;
+
 
 public class Population {
 
@@ -20,17 +22,24 @@ public class Population {
     private void createPopulation() {
         this.debug("Va a comenzar la creación de la población", Operations.CREATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
-            this.debug("Se crea el cromosoma numero " + i, Operations.CREATE);
+            /* Se itera tantas veces como el numero de cromosomas creando cada gen con otro bucle. */
+            this.debug("\nSe crea el cromosoma numero " + (i+1), Operations.CREATE);
             Chromosome chromosome = new Chromosome();
             for (int j = 0; j < Main.getNumGenes(); j++) {
-                this.debug("Se añaden los " + Main.getNumGenes() + "genes", Operations.CREATE);
+                /* Se guardan los valores en variables para facilitar el debug. */
                 int min = Main.getGenMinimum(j);
                 int max = Main.getGenMaximum(j);
-                chromosome.addGene(com.adrip.ce.Utils.generateRandom(min, max), min, max);
+                this.debug("Generando un valor aleatorio entre " +min+ " y " +max+ " para el gen " +(j+1), Operations.CREATE);
+                int value = Utils.generateRandom(min,max);
+                this.debug("Añadiendo el gen " +(j+1)+ " con valor " +value+ " (" +(j+1)+ "/" +(Main.getNumGenes())+ ")", Operations.CREATE);
+                chromosome.addGene(value, min, max);
             }
-            this.debug("El cromosoma " + i + " es introducido en la poblacion", Operations.CREATE);
+            /* Tras generar todos los genes se introduce el cromosoma en el mapa. */
+            this.debug("El cromosoma " + (i+1) + " es introducido en la poblacion (" +chromosome.toString()+ ")", Operations.CREATE);
             town.put(i, chromosome);
         }
+        /* Salto de linea para embellecer el resultado mostrado en la consola. */
+        this.debug("", Operations.CREATE);
     }
 
     public void select() {

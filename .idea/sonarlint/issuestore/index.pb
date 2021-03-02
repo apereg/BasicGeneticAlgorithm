@@ -11,3 +11,5 @@ P
  src/com/adrip/ce/Population.java,4\9\497746d7e62e2f0adb1a42c9afad5d4f6416ef72
 P
  src/com/adrip/ce/Operations.java,7\8\784e6136611534708a09b9d897a4f0ef2c83b1ee
+S
+#.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
