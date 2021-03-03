@@ -11,7 +11,7 @@ public class Main {
     /* Debe tener las dimensiones acordes al numero de genes. */
     private static final int[][] GENE_RANGES = {{-19, -10}, {-9, 0}, {1, 10}, {11, 20}, {21, 30}};
 
-    private static final boolean DEBUG_CREATE = true;
+    private static final boolean DEBUG_CREATE = false;
 
     private static final boolean DEBUG_EVALUATE = true;
 
@@ -28,8 +28,9 @@ public class Main {
     public static void main(String[] args) {
         Population population = new Population();
         System.out.println("Se ha creado la poblacion");
-       // population.select();
-
+        population.evaluate();
+        System.out.println(population.toString());
+        population.select();
         System.out.println(population.toString());
     }
 
