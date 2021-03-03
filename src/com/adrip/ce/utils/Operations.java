@@ -1,4 +1,4 @@
-package com.adrip.ce;
+package com.adrip.ce.utils;
 
 public enum Operations {
     CREATE,

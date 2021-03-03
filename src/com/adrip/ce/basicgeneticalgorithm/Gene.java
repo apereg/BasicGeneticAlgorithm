@@ -1,4 +1,6 @@
-package com.adrip.ce;
+package com.adrip.ce.basicgeneticalgorithm;
+
+import com.adrip.ce.utils.Utils;
 
 public class Gene {
 

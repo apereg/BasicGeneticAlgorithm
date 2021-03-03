@@ -1,6 +1,11 @@
-package com.adrip.ce;
+package com.adrip.ce.basicgeneticalgorithm;
+
+import com.adrip.ce.Main;
+import com.adrip.ce.utils.Operations;
+import com.adrip.ce.utils.Utils;
 
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 public class Population {
@@ -17,6 +22,7 @@ public class Population {
 
     private void createPopulation() {
         this.debug("Va a comenzar la creación de la población", Operations.CREATE);
+        this.debug("El metodo escogido es la creación aleatoria", Operations.CREATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
             /* Se itera tantas veces como el numero de cromosomas creando cada gen con otro bucle. */
             this.debug("\nSe crea el cromosoma numero " + (i + 1), Operations.CREATE);
@@ -40,7 +46,8 @@ public class Population {
 
     public void evaluate() {
         /* Se evalua un cromosoma como la suma de los valores de sus genes. */
-        this.debug("Se va a evaluar la poblacion (La funcion escogida es la suma de sus " + Main.getNumGenes() + " genes)", Operations.EVALUATE);
+        this.debug("Se va a evaluar la poblacion", Operations.EVALUATE);
+        this.debug("El metodo escogido es la suma de sus " + Main.getNumGenes() + " genes", Operations.EVALUATE);
         for (Chromosome c : this.town) {
             this.debug("Evaluando el cromosoma (" + c.toString() + ")", Operations.EVALUATE);
             int aptitude = 0;
@@ -75,14 +82,14 @@ public class Population {
             int value = Utils.generateRandom(0, totalWeight);
             this.debug("Se gira la ruleta y se obtiene " + value, Operations.SELECT);
             int actualRouletteBox = totalWeight;
-            int j = Main.getNumChromosomes()-1;
-            while(j >= 0){
+            int j = Main.getNumChromosomes() - 1;
+            while (j >= 0) {
                 /* Se calcula dinamicamente de final a inicio a que cromosoma pertenece el valor. */
                 actualRouletteBox = actualRouletteBox - this.town.get(j).getAbsAptitude();
                 /* Si se encuentra se añade y se tira otra vez de la ruleta. */
                 if (actualRouletteBox <= value) {
-                    this.debug("Pertenece al cromosoma " + (j+1), Operations.SELECT);
-                    this.debug("Se va a añadir a la nueva poblacion el cromosoma (" +this.town.get(j).toString()+ ")", Operations.SELECT);
+                    this.debug("Pertenece al cromosoma " + (j + 1), Operations.SELECT);
+                    this.debug("Se va a añadir a la nueva poblacion el cromosoma (" + this.town.get(j).toString() + ")", Operations.SELECT);
                     newTown.add(this.town.get(j));
                     break;
                 }
@@ -104,12 +111,21 @@ public class Population {
     }
 
     public Chromosome getBest() {
-        this.debug("Probando getBest", Operations.GETBEST);
-        return null;
+        this.debug("Se va a obtener al mejor de la generacion " + this.generation, Operations.GETBEST);
+        /* Se comparan todas las aptitudes de la lista de la poblacion devolviendo el mejor cromosoma. */
+        return this.town.stream().max(Comparator.comparing(Chromosome::getAptitude)).orElse(null);
     }
 
     public boolean validSolution() {
-        return this.generation >= Main.getNumGenerations() - 1;
+        this.debug("Va a comenzar la validación de la solución", Operations.VALIDSOL);
+        this.debug("El metodo elegido es el numero de generaciones", Operations.VALIDSOL);
+        this.debug("La población esta en la generación " + this.generation + " de " + Main.getNumGenerations(), Operations.VALIDSOL);
+        if (this.generation >= Main.getNumGenerations() - 1) {
+            this.debug("La solución ya es valida", Operations.VALIDSOL);
+            return true;
+        }
+        this.debug("La solución aun no es valida", Operations.VALIDSOL);
+        return false;
     }
 
     public void newGeneration() {

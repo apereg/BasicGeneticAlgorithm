@@ -1,4 +1,7 @@
-package com.adrip.ce;
+package com.adrip.ce.basicgeneticalgorithm;
+
+import com.adrip.ce.Main;
+import com.adrip.ce.exceptions.GeneticAlgorithmException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,30 +18,30 @@ public class Chromosome {
     }
 
     public void addGene(int value, int min, int max) {
-        if(geneChain.size() >= Main.getNumGenes())
-            throw new RuntimeException("Se esta intentando añadir el gen " +this.geneChain.size()+ " de un total de " +Main.getNumGenes()+ "posibles");
+        if (geneChain.size() >= Main.getNumGenes())
+            throw new GeneticAlgorithmException("Se esta intentando añadir el gen " + this.geneChain.size() + " de un total de " + Main.getNumGenes() + "posibles");
         geneChain.add(new Gene(value, min, max));
     }
 
     public void mutateGene(int pos) {
         if (pos >= geneChain.size())
-            throw new RuntimeException(
+            throw new GeneticAlgorithmException(
                     "Se esta intentando mutar el gen " + pos + " de un total de " + this.geneChain.size() + "genes");
         this.geneChain.get(pos).mutate();
     }
 
     public Gene getGene(int pos) {
         if (pos >= geneChain.size())
-            throw new RuntimeException(
+            throw new GeneticAlgorithmException(
                     "Se esta intentando obtener el gen " + pos + " de un total de " + this.geneChain.size() + "genes");
         return this.geneChain.get(pos);
     }
 
-    public void setAptitude(int aptitude){
+    public void setAptitude(int aptitude) {
         this.aptitude = aptitude;
     }
 
-    public int getAptitude(){
+    public int getAptitude() {
         return this.aptitude;
     }
 

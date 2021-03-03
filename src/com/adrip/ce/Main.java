@@ -1,5 +1,7 @@
 package com.adrip.ce;
 
+import com.adrip.ce.basicgeneticalgorithm.Population;
+
 public class Main {
 
     private static final int GENERATIONS = 10;
@@ -10,6 +12,8 @@ public class Main {
 
     /* Debe tener las dimensiones acordes al numero de genes. */
     private static final int[][] GENE_RANGES = {{-19, -10}, {-9, 0}, {1, 10}, {11, 20}, {21, 30}};
+
+    private static final double MUTATE_PROB = 0.15;
 
     private static final boolean DEBUG_CREATE = false;
 
@@ -34,7 +38,9 @@ public class Main {
         System.out.println(population.toString());
     }
 
-    public static int getNumGenerations() { return Main.GENERATIONS; }
+    public static int getNumGenerations() {
+        return Main.GENERATIONS;
+    }
 
     public static int getNumChromosomes() {
         return Main.CHROMOSOMES;
@@ -50,6 +56,10 @@ public class Main {
 
     public static int getGenMaximum(int pos) {
         return GENE_RANGES[pos][1];
+    }
+
+    public static double getMutateProb() {
+        return Main.MUTATE_PROB;
     }
 
     public static boolean getDebugCreate() {
