@@ -37,7 +37,6 @@ public class Chromosome {
         this.geneChain.get(pos).changeValue(newValue);
     }
 
-
     public Gene getGene(int pos) {
         if (pos >= geneChain.size())
             throw new GeneticAlgorithmException(
@@ -63,6 +62,10 @@ public class Chromosome {
         for (Gene gene : geneChain)
             str.append(gene.toString()).append("\t");
         return str.deleteCharAt(str.length() - 1).toString();
+    }
+
+    public int getSelectAptitude() {
+        return Math.max(this.aptitude, 0);
     }
 
 }

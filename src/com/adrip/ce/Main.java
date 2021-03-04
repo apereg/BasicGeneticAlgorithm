@@ -1,40 +1,62 @@
 package com.adrip.ce;
 
+import com.adrip.ce.basicgeneticalgorithm.Chromosome;
 import com.adrip.ce.basicgeneticalgorithm.Population;
 
 public class Main {
 
-    private static final int GENERATIONS = 10;
+    private static final int GENERATIONS = 40;
 
-    private static final int CHROMOSOMES = 10;
+    private static final int CHROMOSOMES = 20;
 
     private static final int GENES = 5;
 
     /* Debe tener las dimensiones acordes al numero de genes. */
-    private static final int[][] GENE_RANGES = {{-19, -10}, {-9, 0}, {1, 10}, {11, 20}, {21, 30}};
+    private static final int[][] GENE_RANGES = {{0, 100}, {0, 110}, {0, 100}, {0, 100}, {0, 100}};
 
-    private static final double MUTATE_PROB = 0.15;
+    private static final double MUTATE_PROB = 0.25;
 
     private static final boolean DEBUG_CREATE = false;
 
-    private static final boolean DEBUG_EVALUATE = true;
+    private static final boolean DEBUG_EVALUATE = false;
 
     private static final boolean DEBUG_GETBEST = true;
 
-    private static final boolean DEBUG_SELECT = true;
+    private static final boolean DEBUG_SELECT = false;
 
-    private static final boolean DEBUG_CROSSOVER = true;
+    private static final boolean DEBUG_CROSSOVER = false;
 
-    private static final boolean DEBUG_MUTATE = true;
+    private static final boolean DEBUG_MUTATE = false;
 
-    private static final boolean DEBUG_VALIDSOL = true;
+    private static final boolean DEBUG_VALIDSOL = false;
 
     public static void main(String[] args) {
         Population population = new Population();
+        Chromosome bestChromosome;
+        Chromosome bestGenerationChromosome;
+        int bestChromosomeGeneration;
         System.out.println("Se ha creado la poblacion");
         System.out.println(population.toString());
-        population.crossover();
+        population.evaluate();
+        bestGenerationChromosome = population.getBest();
+        bestChromosome = bestGenerationChromosome;
+        bestChromosomeGeneration = population.getGeneration();
+        while(!population.validSolution()){
+            population.select();
+            population.crossover();
+            population.mutate();
+            population.evaluate();
+            bestGenerationChromosome = population.getBest();
+            if(bestGenerationChromosome.getAptitude() > bestChromosome.getAptitude()) {
+                bestChromosome = bestGenerationChromosome;
+                bestChromosomeGeneration = population.getGeneration();
+            }
+            population.newGeneration();
+        }
+        System.out.println("Ha acabado el algoritmo genetico");
         System.out.println(population.toString());
+        System.out.println();
+        System.out.println("El mejor cromosoma fue obtenido en la generacion " +bestChromosomeGeneration+ ", tenia aptitud " +bestChromosome.getAptitude()+ " y una composicion (" +bestChromosome.toString()+ ")");
     }
 
     public static int getNumGenerations() {

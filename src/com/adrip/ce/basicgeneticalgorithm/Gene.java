@@ -32,7 +32,7 @@ public class Gene {
 
     public void changeValue(int newValue) {
         if(newValue < this.min || newValue > this.max)
-            throw new GeneticAlgorithmException("Se esta intentando cambiar el valor del gen a " +newValue+ "(Debe estar entre [" +this.min+ ", " +this.max+ "])");
+            throw new GeneticAlgorithmException("Se esta intentando cambiar el valor del gen a " +newValue+ "(Debe estar en [" +this.min+ ", " +this.max+ "])");
         this.value = newValue;
     }
 }

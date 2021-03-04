@@ -15,7 +15,6 @@ public class Population {
     private int generation;
 
     public Population() {
-        this.generation = 0;
         this.town = new LinkedList<>();
         this.createPopulation();
     }
@@ -40,6 +39,7 @@ public class Population {
             this.debug("El cromosoma " + (i + 1) + " es introducido en la poblacion (" + chromosome.toString() + ")", Operations.CREATE);
             this.town.add(chromosome);
         }
+        this.generation = 1;
         /* Salto de linea para embellecer el resultado mostrado en la consola. */
         this.debug("", Operations.CREATE);
     }
@@ -73,7 +73,7 @@ public class Population {
         this.debug("Se van a elegir " + Main.getNumChromosomes() + " nuevos cromosomas", Operations.SELECT);
 
         /* Se utilizan los valores absolutes de las aptitudes para facilitar los calculos. */
-        int totalWeight = this.town.stream().mapToInt(Chromosome::getAbsAptitude).sum();
+        int totalWeight = this.town.stream().mapToInt(Chromosome::getSelectAptitude).sum();
         this.debug("La suma de los valores absolutos de los pesos es " + totalWeight, Operations.SELECT);
 
         LinkedList<Chromosome> newTown = new LinkedList<>();
@@ -116,8 +116,8 @@ public class Population {
                 this.debug("Cruzando el gen " + (j + 1), Operations.CROSSOVER);
                 int value = this.town.get(i + 1).getGene(j).getValue();
                 this.debug("Moviendo el gen del cromosoma " + (i + 2) + " al " + (i + 1), Operations.CROSSOVER);
-                this.town.get(i + 1).getGene(j).changeValue(this.town.get(i).getGene(j).getValue());
-                this.town.get(i).getGene(j).changeValue(value);
+                this.town.get(i + 1).changeGene(j, this.town.get(i).getGene(j).getValue());
+                this.town.get(i).changeGene(j, value);
             }
             this.debug("Cromosomas despues de cruzar: (" + this.town.get(i).toString() + ")\t(" + this.town.get(i + 1).toString() + ")", Operations.CROSSOVER);
         }
@@ -136,7 +136,7 @@ public class Population {
                 if (Utils.generateRandom(0, 99) < Main.getMutateProb() * 100) {
                     this.debug("Muta", Operations.MUTATE);
                     /* La responsabilidad de mutar se delega en el gen (Conoce su minimo y maximo). */
-                    this.town.get(i).getGene(j).mutate();
+                    this.town.get(i).mutateGene(j);
                 } else {
                     this.debug("No muta", Operations.MUTATE);
                 }
@@ -153,23 +153,19 @@ public class Population {
     }
 
     public boolean validSolution() {
-        this.debug("Va a comenzar la validación de la solución", Operations.VALIDSOL);
+        this.debug("Va a comenzar la validación de la solución:", Operations.VALIDSOL);
         this.debug("El metodo escogido es el numero de generaciones", Operations.VALIDSOL);
         this.debug("La población esta en la generación " + this.generation + " de " + Main.getNumGenerations(), Operations.VALIDSOL);
-        if (this.generation >= Main.getNumGenerations() - 1) {
-            this.debug("La solución ya es valida", Operations.VALIDSOL);
+        if (this.generation >= Main.getNumGenerations()) {
+            this.debug("La solución ya es valida\n", Operations.VALIDSOL);
             return true;
         }
-        this.debug("La solución aun no es valida", Operations.VALIDSOL);
+        this.debug("La solución aun no es valida\n", Operations.VALIDSOL);
         return false;
     }
 
     public void newGeneration() {
         ++this.generation;
-    }
-
-    public int getGeneration() {
-        return this.generation;
     }
 
     private void debug(String text, Operations operation) {
@@ -191,5 +187,9 @@ public class Population {
         for (Chromosome c : this.town)
             str.append(c.toString()).append("\n");
         return str.deleteCharAt(str.length() - 1).toString();
+    }
+
+    public int getGeneration() {
+        return this.generation;
     }
 }
