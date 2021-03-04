@@ -64,7 +64,7 @@ public class Population {
             this.debug(str.append(" = ").append(aptitude).toString(), Operations.EVALUATE);
         }
         /* Salto de linea para embellecer el resultado mostrado en la consola. */
-        this.debug("", Operations.CREATE);
+        this.debug("", Operations.EVALUATE);
     }
 
     public void select() {
@@ -99,29 +99,51 @@ public class Population {
         /* Se actualiza la población a la nueva generada. */
         this.town = newTown;
         /* Salto de linea para embellecer el resultado mostrado en la consola. */
-        this.debug("", Operations.CREATE);
+        this.debug("", Operations.SELECT);
     }
 
     public void crossover() {
-        this.debug("Probando Crossover", Operations.CROSSOVER);
+        this.debug("Va a comenzar el cruce de la población", Operations.CROSSOVER);
+        this.debug("El metodo escogido es el cruzamiento con un punto de corte", Operations.CROSSOVER);
+        for (int i = 0; i < Main.getNumChromosomes(); i += 2) {
+            this.debug("Se va a cruzar el cromosoma " + (i + 1) + " y " + (i + 2), Operations.CROSSOVER);
+            if (this.town.get(i + 1) == null)
+                break;
+            int breakPoint = Utils.generateRandom(1, Main.getNumGenes() - 1);
+            this.debug("El punto de corte escogido es el gen " + breakPoint, Operations.CROSSOVER);
+            this.debug("Cromosomas antes de cruzar: (" + this.town.get(i).toString() + ") (" + this.town.get(i + 1).toString() + ")", Operations.CROSSOVER);
+            for (int j = breakPoint; j < Main.getNumGenes(); j++) {
+                this.debug("Cruzando el gen " + (j + 1), Operations.CROSSOVER);
+                int value = this.town.get(i + 1).getGene(j).getValue();
+                this.debug("Moviendo el gen del cromosoma " + (i + 2) + " al " + (i + 1), Operations.CROSSOVER);
+                this.town.get(i + 1).getGene(j).changeValue(this.town.get(i).getGene(j).getValue());
+                this.town.get(i).getGene(j).changeValue(value);
+            }
+            this.debug("Cromosomas despues de cruzar: (" + this.town.get(i).toString() + ")\t(" + this.town.get(i + 1).toString() + ")", Operations.CROSSOVER);
+        }
+        /* Salto de linea para embellecer el resultado mostrado en la consola. */
+        this.debug("", Operations.CROSSOVER);
     }
 
     public void mutate() {
         this.debug("Va a comenzar la mutación de la población", Operations.MUTATE);
         this.debug("El metodo escogido es la mutación por gen", Operations.MUTATE);
         this.debug("La probabilidad de que un gen mute es del " + (Main.getMutateProb() * 100) + "%", Operations.MUTATE);
-
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
             for (int j = 0; j < Main.getNumGenes(); j++) {
+                /* Se recorren todos los genes de cada cromosoma comprobando con un numero aleatorio si tiene que mutar. */
                 this.debug("Se va a comprobar la mutación en el gen " + (j + 1) + " del cromosoma " + (i + 1), Operations.MUTATE);
                 if (Utils.generateRandom(0, 99) < Main.getMutateProb() * 100) {
                     this.debug("Muta", Operations.MUTATE);
+                    /* La responsabilidad de mutar se delega en el gen (Conoce su minimo y maximo). */
                     this.town.get(i).getGene(j).mutate();
                 } else {
                     this.debug("No muta", Operations.MUTATE);
                 }
             }
         }
+        /* Salto de linea para embellecer el resultado mostrado en la consola. */
+        this.debug("", Operations.MUTATE);
     }
 
     public Chromosome getBest() {

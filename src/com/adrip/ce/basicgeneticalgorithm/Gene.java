@@ -1,5 +1,6 @@
 package com.adrip.ce.basicgeneticalgorithm;
 
+import com.adrip.ce.exceptions.GeneticAlgorithmException;
 import com.adrip.ce.utils.Utils;
 
 public class Gene {
@@ -29,4 +30,9 @@ public class Gene {
         return Integer.toString(this.value);
     }
 
+    public void changeValue(int newValue) {
+        if(newValue < this.min || newValue > this.max)
+            throw new GeneticAlgorithmException("Se esta intentando cambiar el valor del gen a " +newValue+ "(Debe estar entre [" +this.min+ ", " +this.max+ "])");
+        this.value = newValue;
+    }
 }

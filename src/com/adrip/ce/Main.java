@@ -33,7 +33,7 @@ public class Main {
         Population population = new Population();
         System.out.println("Se ha creado la poblacion");
         System.out.println(population.toString());
-        population.mutate();
+        population.crossover();
         System.out.println(population.toString());
     }
 

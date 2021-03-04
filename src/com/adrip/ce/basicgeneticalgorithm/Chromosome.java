@@ -30,6 +30,14 @@ public class Chromosome {
         this.geneChain.get(pos).mutate();
     }
 
+    public void changeGene(int pos, int newValue) {
+        if (pos >= geneChain.size())
+            throw new GeneticAlgorithmException(
+                    "Se esta intentando cambiar el gen " + pos + " de un total de " + this.geneChain.size() + "genes");
+        this.geneChain.get(pos).changeValue(newValue);
+    }
+
+
     public Gene getGene(int pos) {
         if (pos >= geneChain.size())
             throw new GeneticAlgorithmException(
