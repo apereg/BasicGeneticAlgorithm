@@ -32,9 +32,8 @@ public class Main {
     public static void main(String[] args) {
         Population population = new Population();
         System.out.println("Se ha creado la poblacion");
-        population.evaluate();
         System.out.println(population.toString());
-        population.select();
+        population.mutate();
         System.out.println(population.toString());
     }
 

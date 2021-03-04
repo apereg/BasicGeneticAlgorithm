@@ -69,7 +69,7 @@ public class Population {
 
     public void select() {
         this.debug("Va a comenzar la selección de la población", Operations.SELECT);
-        this.debug("El metodo elegido es la ruleta con pesos", Operations.SELECT);
+        this.debug("El metodo escogido es la ruleta con pesos", Operations.SELECT);
         this.debug("Se van a elegir " + Main.getNumChromosomes() + " nuevos cromosomas", Operations.SELECT);
 
         /* Se utilizan los valores absolutes de las aptitudes para facilitar los calculos. */
@@ -107,7 +107,21 @@ public class Population {
     }
 
     public void mutate() {
-        this.debug("Probando mutate", Operations.MUTATE);
+        this.debug("Va a comenzar la mutación de la población", Operations.MUTATE);
+        this.debug("El metodo escogido es la mutación por gen", Operations.MUTATE);
+        this.debug("La probabilidad de que un gen mute es del " + (Main.getMutateProb() * 100) + "%", Operations.MUTATE);
+
+        for (int i = 0; i < Main.getNumChromosomes(); i++) {
+            for (int j = 0; j < Main.getNumGenes(); j++) {
+                this.debug("Se va a comprobar la mutación en el gen " + (j + 1) + " del cromosoma " + (i + 1), Operations.MUTATE);
+                if (Utils.generateRandom(0, 99) < Main.getMutateProb() * 100) {
+                    this.debug("Muta", Operations.MUTATE);
+                    this.town.get(i).getGene(j).mutate();
+                } else {
+                    this.debug("No muta", Operations.MUTATE);
+                }
+            }
+        }
     }
 
     public Chromosome getBest() {
@@ -118,7 +132,7 @@ public class Population {
 
     public boolean validSolution() {
         this.debug("Va a comenzar la validación de la solución", Operations.VALIDSOL);
-        this.debug("El metodo elegido es el numero de generaciones", Operations.VALIDSOL);
+        this.debug("El metodo escogido es el numero de generaciones", Operations.VALIDSOL);
         this.debug("La población esta en la generación " + this.generation + " de " + Main.getNumGenerations(), Operations.VALIDSOL);
         if (this.generation >= Main.getNumGenerations() - 1) {
             this.debug("La solución ya es valida", Operations.VALIDSOL);
