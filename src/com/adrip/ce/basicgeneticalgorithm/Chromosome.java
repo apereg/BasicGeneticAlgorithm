@@ -17,6 +17,15 @@ public class Chromosome {
         this.aptitude = Integer.MIN_VALUE;
     }
 
+    public Chromosome(Chromosome oldChromosome){
+        this.aptitude = oldChromosome.getAptitude();
+        this.geneChain = new LinkedList<>();
+        for (int i = 0; i < Main.getNumGenes(); i++) {
+            Gene gene = oldChromosome.getGene(i);
+            this.geneChain.add(new Gene(gene.getValue(), gene.getMin(), gene.getMax()));
+        }
+    }
+
     public void addGene(int value, int min, int max) {
         if (geneChain.size() >= Main.getNumGenes())
             throw new GeneticAlgorithmException("Se esta intentando añadir el gen " + this.geneChain.size() + " de un total de " + Main.getNumGenes() + "posibles");
@@ -56,16 +65,16 @@ public class Chromosome {
         return Math.abs(this.aptitude);
     }
 
+    public int getSelectAptitude() {
+        return Math.max(this.aptitude, 0);
+    }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         for (Gene gene : geneChain)
             str.append(gene.toString()).append("\t");
         return str.deleteCharAt(str.length() - 1).toString();
-    }
-
-    public int getSelectAptitude() {
-        return Math.max(this.aptitude, 0);
     }
 
 }

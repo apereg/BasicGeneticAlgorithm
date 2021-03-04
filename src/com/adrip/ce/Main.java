@@ -5,26 +5,26 @@ import com.adrip.ce.basicgeneticalgorithm.Population;
 
 public class Main {
 
-    private static final int GENERATIONS = 40;
+    private static final int GENERATIONS = 2;
 
-    private static final int CHROMOSOMES = 20;
+    private static final int CHROMOSOMES = 5;
 
     private static final int GENES = 5;
 
     /* Debe tener las dimensiones acordes al numero de genes. */
-    private static final int[][] GENE_RANGES = {{0, 100}, {0, 110}, {0, 100}, {0, 100}, {0, 100}};
+    private static final int[][] GENE_RANGES = {{0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}};
 
-    private static final double MUTATE_PROB = 0.25;
+    private static final int MUTATE_PROB = 25;
 
     private static final boolean DEBUG_CREATE = false;
 
     private static final boolean DEBUG_EVALUATE = false;
 
-    private static final boolean DEBUG_GETBEST = true;
+    private static final boolean DEBUG_GETBEST = false;
 
     private static final boolean DEBUG_SELECT = false;
 
-    private static final boolean DEBUG_CROSSOVER = false;
+    private static final boolean DEBUG_CROSSOVER = true;
 
     private static final boolean DEBUG_MUTATE = false;
 
@@ -79,7 +79,7 @@ public class Main {
         return GENE_RANGES[pos][1];
     }
 
-    public static double getMutateProb() {
+    public static int getMutateProb() {
         return Main.MUTATE_PROB;
     }
 

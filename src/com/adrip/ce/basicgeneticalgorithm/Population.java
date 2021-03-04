@@ -85,12 +85,12 @@ public class Population {
             int j = Main.getNumChromosomes() - 1;
             while (j >= 0) {
                 /* Se calcula dinamicamente de final a inicio a que cromosoma pertenece el valor. */
-                actualRouletteBox = actualRouletteBox - this.town.get(j).getAbsAptitude();
+                actualRouletteBox = actualRouletteBox - this.town.get(j).getSelectAptitude();
                 /* Si se encuentra se añade y se tira otra vez de la ruleta. */
                 if (actualRouletteBox <= value) {
                     this.debug("Pertenece al cromosoma " + (j + 1), Operations.SELECT);
                     this.debug("Se va a añadir a la nueva poblacion el cromosoma (" + this.town.get(j).toString() + ")", Operations.SELECT);
-                    newTown.add(this.town.get(j));
+                    newTown.add(new Chromosome(this.town.get(j)));
                     break;
                 }
                 j--;
@@ -107,7 +107,7 @@ public class Population {
         this.debug("El metodo escogido es el cruzamiento con un punto de corte", Operations.CROSSOVER);
         for (int i = 0; i < Main.getNumChromosomes(); i += 2) {
             this.debug("Se va a cruzar el cromosoma " + (i + 1) + " y " + (i + 2), Operations.CROSSOVER);
-            if (this.town.get(i + 1) == null)
+            if ((i+1) == this.town.size())
                 break;
             int breakPoint = Utils.generateRandom(1, Main.getNumGenes() - 1);
             this.debug("El punto de corte escogido es el gen " + breakPoint, Operations.CROSSOVER);
@@ -127,20 +127,21 @@ public class Population {
 
     public void mutate() {
         this.debug("Va a comenzar la mutación de la población", Operations.MUTATE);
+        System.out.println(this.toString());
         this.debug("El metodo escogido es la mutación por gen", Operations.MUTATE);
-        this.debug("La probabilidad de que un gen mute es del " + (Main.getMutateProb() * 100) + "%", Operations.MUTATE);
+        this.debug("La probabilidad de que un gen mute es del " + Main.getMutateProb() + "%", Operations.MUTATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
+            this.debug("Cromosoma " +(i+1)+ " antes de mutar (" +this.town.get(i).toString()+ ")", Operations.MUTATE);
+            this.debug("Comprobando si los genes tienen que mutar...", Operations.MUTATE);
             for (int j = 0; j < Main.getNumGenes(); j++) {
                 /* Se recorren todos los genes de cada cromosoma comprobando con un numero aleatorio si tiene que mutar. */
-                this.debug("Se va a comprobar la mutación en el gen " + (j + 1) + " del cromosoma " + (i + 1), Operations.MUTATE);
-                if (Utils.generateRandom(0, 99) < Main.getMutateProb() * 100) {
-                    this.debug("Muta", Operations.MUTATE);
+                if (Utils.generateRandom(0,99) < Main.getMutateProb()) {
+                    this.debug("Muta el gen " +(j+1), Operations.MUTATE);
                     /* La responsabilidad de mutar se delega en el gen (Conoce su minimo y maximo). */
                     this.town.get(i).mutateGene(j);
-                } else {
-                    this.debug("No muta", Operations.MUTATE);
                 }
             }
+            this.debug("Cromosoma " +(i+1)+ " despues de mutar (" +this.town.get(i).toString()+ ")", Operations.MUTATE);
         }
         /* Salto de linea para embellecer el resultado mostrado en la consola. */
         this.debug("", Operations.MUTATE);

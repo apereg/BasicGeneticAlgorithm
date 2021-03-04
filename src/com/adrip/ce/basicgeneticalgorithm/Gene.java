@@ -11,6 +11,14 @@ public class Gene {
 
     private final int max;
 
+    public int getMin() {
+        return min;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
     public Gene(int value, int min, int max) {
         this.value = value;
         this.min = min;
