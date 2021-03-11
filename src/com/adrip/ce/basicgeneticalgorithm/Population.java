@@ -7,13 +7,17 @@ import com.adrip.ce.utils.Utils;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.OptionalDouble;
 
 public class Population {
 
     private LinkedList<Chromosome> town;
 
     private int generation;
+
+    private HashMap<Integer, Integer[]> pastGenerationAptitudes = new HashMap<>();
 
     public Population() {
         this.town = new LinkedList<>();
@@ -40,7 +44,7 @@ public class Population {
             this.debug("El cromosoma " + (i + 1) + " es introducido en la poblacion " + chromosome.toString(), Operations.CREATE);
             this.town.add(chromosome);
         }
-        this.generation = 1;
+        this.generation = 0;
         /* Salto de linea para embellecer el resultado mostrado en la consola. */
         this.debug("", Operations.CREATE);
     }
@@ -171,9 +175,12 @@ public class Population {
     }
 
     public Chromosome getBest() {
-        this.debug("Se va a obtener al mejor de la generacion " + this.generation, Operations.GETBEST);
         /* Se comparan todas las aptitudes de la lista de la poblacion devolviendo el mejor cromosoma. */
         return this.town.stream().max(Comparator.comparing(Chromosome::getAptitude)).orElse(null);
+    }
+
+    public int getPopulationMeanAptitude(){
+        return (int) this.town.stream().mapToInt(Chromosome::getAptitude).average().getAsDouble();
     }
 
     public boolean validSolution() {
@@ -189,6 +196,7 @@ public class Population {
     }
 
     public void newGeneration() {
+        this.pastGenerationAptitudes.put(this.generation, new Integer[]{this.getBest().getAptitude(), this.getPopulationMeanAptitude()});
         ++this.generation;
     }
 
@@ -216,4 +224,15 @@ public class Population {
     public int getGeneration() {
         return this.generation;
     }
+
+    public int getMean(int generation){
+        Integer[] values = this.pastGenerationAptitudes.get(generation);
+        return values[1];
+    }
+
+    public int getBest(int generation){
+        Integer[] values = this.pastGenerationAptitudes.get(generation);
+        return values[0];
+    }
+
 }

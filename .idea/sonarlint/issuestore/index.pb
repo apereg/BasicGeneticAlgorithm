@@ -15,3 +15,5 @@ f
 6src/com/adrip/ce/basicgeneticalgorithm/Chromosome.java,7\4\74b825e8206efd8f5c13e3ae19d477974b9b334f
 f
 6src/com/adrip/ce/basicgeneticalgorithm/Population.java,8\d\8d3bfd18d649cf6fbc9264005730e10b86b31bf7
+U
+%src/com/adrip/ce/utils/Mutations.java,a\6\a6bf4b4249b083b0268c05b08f073cca82f8ba46
