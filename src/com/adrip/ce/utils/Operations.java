@@ -6,6 +6,5 @@ public enum Operations {
     EVALUATE,
     CROSSOVER,
     MUTATE,
-    GETBEST,
     VALIDSOL
 }

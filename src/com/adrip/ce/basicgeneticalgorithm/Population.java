@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.OptionalDouble;
 
 public class Population {
 
@@ -17,7 +16,7 @@ public class Population {
 
     private int generation;
 
-    private HashMap<Integer, Integer[]> pastGenerationAptitudes = new HashMap<>();
+    private HashMap<Integer, Integer[]> pastGenerationMeanAptitudes = new HashMap<>();
 
     public Population() {
         this.town = new LinkedList<>();
@@ -179,24 +178,57 @@ public class Population {
         return this.town.stream().max(Comparator.comparing(Chromosome::getAptitude)).orElse(null);
     }
 
-    public int getPopulationMeanAptitude(){
+    public int getPopulationMeanAptitude() {
         return (int) this.town.stream().mapToInt(Chromosome::getAptitude).average().getAsDouble();
     }
 
     public boolean validSolution() {
+        this.debug("\n------------------------------------*------------------------------------", Operations.VALIDSOL);
         this.debug("Va a comenzar la validación de la solución:", Operations.VALIDSOL);
-        this.debug("El metodo escogido es el numero de generaciones", Operations.VALIDSOL);
-        this.debug("La población esta en la generación " + this.generation + " de " + Main.getNumGenerations(), Operations.VALIDSOL);
+
+        boolean result = false;
+        if (Main.getNumberGenerationsCondition() && this.checkGenerationsElapsed())
+            result = true;
+        if (!result && Main.getUpgradeGenerationsCondition() && this.generation > Main.getNumberOfGenerationsToCheck() && checkPastGenerationsImprovement())
+            result = true;
+
+        this.debug("------------------------------------*------------------------------------\n", Operations.VALIDSOL);
+        return result;
+    }
+
+    private boolean checkGenerationsElapsed() {
+        this.debug("\nEvaluando la condición de parada del número de generaciones", Operations.VALIDSOL);
+        this.debug("Generación " + this.generation + "/" + Main.getNumGenerations(), Operations.VALIDSOL);
         if (this.generation >= Main.getNumGenerations()) {
-            this.debug("La solución ya es valida\n", Operations.VALIDSOL);
+            this.debug("El algoritmo debe parar", Operations.VALIDSOL);
             return true;
+        } else {
+            this.debug("El algoritmo debe continuar", Operations.VALIDSOL);
+            return false;
         }
-        this.debug("La solución aun no es valida\n", Operations.VALIDSOL);
+    }
+
+    private boolean checkPastGenerationsImprovement() {
+        this.debug("\nEvaluando la condición de parada de mejora hace n generaciones (n=" + Main.getNumberOfGenerationsToCheck() + ")", Operations.VALIDSOL);
+        double act = this.getPopulationMeanAptitude();
+        double past = this.pastGenerationMeanAptitudes.get(this.generation - Main.getNumberOfGenerationsToCheck() - 1)[1];
+        double improvementPercentage = (Main.getImprovementPercentage() + 100.0f) / 100.0f;
+        this.debug("Aptitudes medias:", Operations.VALIDSOL);
+        this.debug("\tGeneración actual: " + act, Operations.VALIDSOL);
+        this.debug("\tHace " + Main.getNumberOfGenerationsToCheck() + " generaciones: " + past, Operations.VALIDSOL);
+        double upgrade = (act / past);
+        this.debug("Porcentaje de mejora: " + upgrade + " (Requerido " + improvementPercentage + "%)", Operations.VALIDSOL);
+        if (upgrade <= improvementPercentage) {
+            this.debug("El algoritmo debe parar", Operations.VALIDSOL);
+            return true;
+        } else {
+            this.debug("El algoritmo debe continuar", Operations.VALIDSOL);
+        }
         return false;
     }
 
     public void newGeneration() {
-        this.pastGenerationAptitudes.put(this.generation, new Integer[]{this.getBest().getAptitude(), this.getPopulationMeanAptitude()});
+        this.pastGenerationMeanAptitudes.put(this.generation, new Integer[]{this.getBest().getAptitude(), this.getPopulationMeanAptitude()});
         ++this.generation;
     }
 
@@ -225,13 +257,13 @@ public class Population {
         return this.generation;
     }
 
-    public int getMean(int generation){
-        Integer[] values = this.pastGenerationAptitudes.get(generation);
+    public int getMean(int generation) {
+        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
         return values[1];
     }
 
-    public int getBest(int generation){
-        Integer[] values = this.pastGenerationAptitudes.get(generation);
+    public int getBest(int generation) {
+        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
         return values[0];
     }
 

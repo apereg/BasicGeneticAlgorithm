@@ -11,11 +11,10 @@ public class Main {
     /* PARAMETROS MODIFICABLES. */
 
     /* Valores numericos generales. */
-    private static final int GENERATIONS = 20;
-    private static final int CHROMOSOMES = 20;
-    private static final int GENES = 5;
+    private static final int CHROMOSOMES = 30;
+    private static final int GENES = 10;
     /* Debe tener las dimensiones acordes al numero de genes. */
-    private static final int[][] GENE_RANGES = {{0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}};
+    private static final int[][] GENE_RANGES = {{0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}};
 
     private static final boolean DEBUG_CREATE = false;
 
@@ -30,10 +29,35 @@ public class Main {
     /* El valor debe estar dentro del enum Mutations. */
     private static final Mutations MUTATION_TYPE = Mutations.PER_GENE;
     /* Valor *100 (Ejemplo: 15 = 15%). */
-    private static final int MUTATE_PROB_PER_CHROMOSOME = 25;
-    private static final int MUTATE_PROB_PER_GENE = 15; // Valor *100 Ex: 15 = 15%
+    private static final int MUTATE_PROB_PER_CHROMOSOME = 15;
+    /* Valor *100 (Ejemplo: 15 = 15%). */
+    private static final int MUTATE_PROB_PER_GENE = 5;
 
-    private static final boolean DEBUG_VALIDSOL = false;
+    private static final boolean DEBUG_VALIDSOL = true;
+
+    public static boolean getNumberGenerationsCondition() {
+        return NUMBER_GENERATIONS_CONDITION;
+    }
+
+    public static boolean getUpgradeGenerationsCondition() {
+        return UPGRADE_GENERATIONS_CONDITION;
+    }
+
+    public static int getNumberOfGenerationsToCheck() {
+        return NUMBER_OF_GENERATIONS_TO_CHECK;
+    }
+
+    public static int getImprovementPercentage() {
+        return IMPROVEMENT_PERCENTAGE;
+    }
+
+    private static final boolean NUMBER_GENERATIONS_CONDITION = true;
+    private static final int GENERATIONS = 200;
+    private static final boolean UPGRADE_GENERATIONS_CONDITION = true;
+    private static final int NUMBER_OF_GENERATIONS_TO_CHECK = 50;
+    /* Valor *100 (Ejemplo: 15 = 15%). */
+    private static final int IMPROVEMENT_PERCENTAGE = 1;
+
 
     public static void main(String[] args) {
         GeneticAlgorithm algorithm = new GeneticAlgorithm(new Population());
