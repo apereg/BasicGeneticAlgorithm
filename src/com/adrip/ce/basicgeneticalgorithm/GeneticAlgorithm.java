@@ -20,7 +20,7 @@ public class GeneticAlgorithm {
         bestGenerationChromosome = population.getBest();
         bestChromosome = bestGenerationChromosome;
         bestChromosomeGeneration = population.getGeneration();
-        while (!population.validSolution()) {
+        while (!population.isValidSolution()) {
             System.out.println("Empieza la gen " + population.getGeneration());
             population.select();
             population.crossover();

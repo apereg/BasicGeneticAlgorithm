@@ -7,11 +7,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-import java.net.URL;
 
 public class EvolutionGraphic extends JFrame {
 

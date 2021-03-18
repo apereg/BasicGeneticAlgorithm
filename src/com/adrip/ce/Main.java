@@ -1,9 +1,7 @@
 package com.adrip.ce;
 
-import com.adrip.ce.basicgeneticalgorithm.Chromosome;
 import com.adrip.ce.basicgeneticalgorithm.GeneticAlgorithm;
 import com.adrip.ce.basicgeneticalgorithm.Population;
-import com.adrip.ce.graphics.EvolutionGraphic;
 import com.adrip.ce.utils.Mutations;
 
 public class Main {

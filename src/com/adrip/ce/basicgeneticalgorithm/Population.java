@@ -23,6 +23,29 @@ public class Population {
         this.createPopulation();
     }
 
+    public int getGeneration() {
+        return this.generation;
+    }
+
+    public int getMean(int generation) {
+        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
+        return values[1];
+    }
+
+    public int getBest(int generation) {
+        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
+        return values[0];
+    }
+
+    public Chromosome getBest() {
+        /* Se comparan todas las aptitudes de la lista de la poblacion devolviendo el mejor cromosoma. */
+        return this.town.stream().max(Comparator.comparing(Chromosome::getAptitude)).orElse(null);
+    }
+
+    public int getPopulationMeanAptitude() {
+        return (int) this.town.stream().mapToInt(Chromosome::getAptitude).average().orElseThrow(IllegalStateException::new);
+    }
+
     private void createPopulation() {
         this.debug("Va a comenzar la creación de la población", Operations.CREATE);
         this.debug("El metodo escogido es la creación aleatoria", Operations.CREATE);
@@ -173,23 +196,14 @@ public class Population {
         }
     }
 
-    public Chromosome getBest() {
-        /* Se comparan todas las aptitudes de la lista de la poblacion devolviendo el mejor cromosoma. */
-        return this.town.stream().max(Comparator.comparing(Chromosome::getAptitude)).orElse(null);
-    }
-
-    public int getPopulationMeanAptitude() {
-        return (int) this.town.stream().mapToInt(Chromosome::getAptitude).average().getAsDouble();
-    }
-
-    public boolean validSolution() {
+    public boolean isValidSolution() {
         this.debug("\n------------------------------------*------------------------------------", Operations.VALIDSOL);
         this.debug("Va a comenzar la validación de la solución:", Operations.VALIDSOL);
 
         boolean result = false;
         if (Main.getNumberGenerationsCondition() && this.checkGenerationsElapsed())
             result = true;
-        if (!result && Main.getUpgradeGenerationsCondition() && this.generation > Main.getNumberOfGenerationsToCheck() && checkPastGenerationsImprovement())
+        if (!result && Main.getUpgradeGenerationsCondition() && this.generation > (Main.getNumberOfGenerationsToCheck() - 1) && checkPastGenerationsImprovement())
             result = true;
 
         this.debug("------------------------------------*------------------------------------\n", Operations.VALIDSOL);
@@ -210,13 +224,15 @@ public class Population {
 
     private boolean checkPastGenerationsImprovement() {
         this.debug("\nEvaluando la condición de parada de mejora hace n generaciones (n=" + Main.getNumberOfGenerationsToCheck() + ")", Operations.VALIDSOL);
+        /* Se calcula la media de aptitud actual y se obtiene del historico la de hace n generaciones. */
         double act = this.getPopulationMeanAptitude();
-        double past = this.pastGenerationMeanAptitudes.get(this.generation - Main.getNumberOfGenerationsToCheck() - 1)[1];
-        double improvementPercentage = (Main.getImprovementPercentage() + 100.0f) / 100.0f;
+        double past = this.getMean(this.generation - Main.getNumberOfGenerationsToCheck() - 1);
         this.debug("Aptitudes medias:", Operations.VALIDSOL);
         this.debug("\tGeneración actual: " + act, Operations.VALIDSOL);
         this.debug("\tHace " + Main.getNumberOfGenerationsToCheck() + " generaciones: " + past, Operations.VALIDSOL);
-        double upgrade = (act / past);
+        /* Se dividen ambos valores para comprobar el porcentaje de mejora obtenido. */
+        double upgrade = act / past;
+        double improvementPercentage = (Main.getImprovementPercentage() + 100.0f) / 100.0f;
         this.debug("Porcentaje de mejora: " + upgrade + " (Requerido " + improvementPercentage + "%)", Operations.VALIDSOL);
         if (upgrade <= improvementPercentage) {
             this.debug("El algoritmo debe parar", Operations.VALIDSOL);
@@ -251,20 +267,6 @@ public class Population {
         for (Chromosome c : this.town)
             str.append(c.toString()).append("\n");
         return str.deleteCharAt(str.length() - 1).toString();
-    }
-
-    public int getGeneration() {
-        return this.generation;
-    }
-
-    public int getMean(int generation) {
-        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
-        return values[1];
-    }
-
-    public int getBest(int generation) {
-        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
-        return values[0];
     }
 
 }
