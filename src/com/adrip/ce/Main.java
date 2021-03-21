@@ -9,7 +9,7 @@ public class Main {
     /* PARAMETROS MODIFICABLES. */
 
     /* Valores numericos generales. */
-    private static final int CHROMOSOMES = 30;
+    private static final int CHROMOSOMES = 5;
     private static final int GENES = 10;
     /* Debe tener las dimensiones acordes al numero de genes. */
     private static final int[][] GENE_RANGES = {{0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}};
@@ -18,9 +18,12 @@ public class Main {
 
     private static final boolean DEBUG_EVALUATE = false;
 
-    private static final boolean DEBUG_SELECT = false;
+    private static final boolean DEBUG_SELECT = true;
+    private static final boolean ELITISM = true;
+    private static final int ELITE_SIZE = 2;
 
     private static final boolean DEBUG_CROSSOVER = false;
+    private static final int CROSSOVER_PROB = 90;
 
     /* Funcion MUTATE */
     private static final boolean DEBUG_MUTATE = false;
@@ -31,27 +34,11 @@ public class Main {
     /* Valor *100 (Ejemplo: 15 = 15%). */
     private static final int MUTATE_PROB_PER_GENE = 5;
 
-    private static final boolean DEBUG_VALIDSOL = true;
-
-    public static boolean getNumberGenerationsCondition() {
-        return NUMBER_GENERATIONS_CONDITION;
-    }
-
-    public static boolean getUpgradeGenerationsCondition() {
-        return UPGRADE_GENERATIONS_CONDITION;
-    }
-
-    public static int getNumberOfGenerationsToCheck() {
-        return NUMBER_OF_GENERATIONS_TO_CHECK;
-    }
-
-    public static int getImprovementPercentage() {
-        return IMPROVEMENT_PERCENTAGE;
-    }
+    private static final boolean DEBUG_VALIDSOL = false;
 
     private static final boolean NUMBER_GENERATIONS_CONDITION = true;
-    private static final int GENERATIONS = 200;
-    private static final boolean UPGRADE_GENERATIONS_CONDITION = true;
+    private static final int GENERATIONS = 1;
+    private static final boolean UPGRADE_GENERATIONS_CONDITION = false;
     private static final int NUMBER_OF_GENERATIONS_TO_CHECK = 50;
     /* Valor *100 (Ejemplo: 15 = 15%). */
     private static final int IMPROVEMENT_PERCENTAGE = 1;
@@ -61,7 +48,7 @@ public class Main {
         GeneticAlgorithm algorithm = new GeneticAlgorithm(new Population());
         algorithm.run();
         algorithm.printSolution();
-        algorithm.showEvolution();
+        //algorithm.showEvolution();
     }
 
     public static int getNumGenerations() {
@@ -94,6 +81,34 @@ public class Main {
 
     public static int getMutateProbPerGene() {
         return Main.MUTATE_PROB_PER_GENE;
+    }
+
+    public static boolean getNumberGenerationsCondition() {
+        return NUMBER_GENERATIONS_CONDITION;
+    }
+
+    public static boolean getUpgradeGenerationsCondition() {
+        return UPGRADE_GENERATIONS_CONDITION;
+    }
+
+    public static int getNumberOfGenerationsToCheck() {
+        return NUMBER_OF_GENERATIONS_TO_CHECK;
+    }
+
+    public static int getImprovementPercentage() {
+        return IMPROVEMENT_PERCENTAGE;
+    }
+
+    public static boolean getElitism() {
+        return ELITISM;
+    }
+
+    public static int getEliteSize() {
+        return ELITE_SIZE;
+    }
+
+    public static int getCrossoverProb() {
+        return CROSSOVER_PROB;
     }
 
     @SuppressWarnings("unused")

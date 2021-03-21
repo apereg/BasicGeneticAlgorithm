@@ -1,4 +1,4 @@
-package com.adrip.ce.graphics;
+package com.adrip.ce.outputs;
 
 import com.adrip.ce.basicgeneticalgorithm.Population;
 import org.jfree.chart.ChartFactory;

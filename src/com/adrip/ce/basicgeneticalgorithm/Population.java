@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 public class Population {
 
@@ -16,7 +17,7 @@ public class Population {
 
     private int generation;
 
-    private HashMap<Integer, Integer[]> pastGenerationMeanAptitudes = new HashMap<>();
+    private LinkedList<GenerationValues> pastGenerationMeanAptitudes = new LinkedList<>();
 
     public Population() {
         this.town = new LinkedList<>();
@@ -28,13 +29,11 @@ public class Population {
     }
 
     public int getMean(int generation) {
-        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
-        return values[1];
+        return this.pastGenerationMeanAptitudes.get(generation).getMeanAptitude();
     }
 
     public int getBest(int generation) {
-        Integer[] values = this.pastGenerationMeanAptitudes.get(generation);
-        return values[0];
+        return this.pastGenerationMeanAptitudes.get(generation).getBestAptitude();
     }
 
     public Chromosome getBest() {
@@ -95,21 +94,32 @@ public class Population {
     }
 
     public void select() {
+        this.debug("\n------------------------------------*------------------------------------", Operations.SELECT);
         this.debug("Va a comenzar la selección de la población", Operations.SELECT);
         this.debug("El metodo escogido es la ruleta con pesos", Operations.SELECT);
-        this.debug("Se van a elegir " + Main.getNumChromosomes() + " nuevos cromosomas", Operations.SELECT);
+        LinkedList<Chromosome> newTown = new LinkedList<>();
+        if (Main.getElitism()) {
+            this.debug("Se salvara la elite (" + Main.getEliteSize() + " cromosomas)", Operations.SELECT);
+            /* Se ordena la lista segun la aptitud de los cromosomas. */
+            this.town = this.town.stream().sorted(Comparator.comparingInt(Chromosome::getAptitude).reversed()).collect(Collectors.toCollection(LinkedList::new));
+            for (int i = 0; i < Main.getEliteSize(); i++) {
+                this.debug("Se añade a la nueva poblacion directamente el cromosoma " +this.town.getFirst().toString(), Operations.SELECT);
+                newTown.add(new Chromosome(this.town.removeFirst()));
+            }
+        }
 
+        this.debug("Se van a elegir " + this.town.size() + " nuevos cromosomas", Operations.SELECT);
         /* Se utilizan los valores absolutes de las aptitudes para facilitar los calculos. */
         int totalWeight = this.town.stream().mapToInt(Chromosome::getSelectAptitude).sum();
         this.debug("La suma de los valores absolutos de los pesos es " + totalWeight, Operations.SELECT);
 
-        LinkedList<Chromosome> newTown = new LinkedList<>();
+
         for (int i = 0; i < this.town.size(); i++) {
             /* Se gira la ruleta tantas veces como cromosomas tengamos para generar una nueva poblacion igual. */
             int value = Utils.generateRandom(0, totalWeight);
             this.debug("Se gira la ruleta y se obtiene " + value, Operations.SELECT);
             int actualRouletteBox = totalWeight;
-            int j = Main.getNumChromosomes() - 1;
+            int j = this.town.size() - 1;
             while (j >= 0) {
                 /* Se calcula dinamicamente de final a inicio a que cromosoma pertenece el valor. */
                 actualRouletteBox = actualRouletteBox - this.town.get(j).getSelectAptitude();
@@ -125,8 +135,7 @@ public class Population {
         }
         /* Se actualiza la población a la nueva generada. */
         this.town = newTown;
-        /* Salto de linea para embellecer el resultado mostrado en la consola. */
-        this.debug("", Operations.SELECT);
+        this.debug("------------------------------------*------------------------------------\n", Operations.SELECT);
     }
 
     public void crossover() {
@@ -226,7 +235,7 @@ public class Population {
         this.debug("\nEvaluando la condición de parada de mejora hace n generaciones (n=" + Main.getNumberOfGenerationsToCheck() + ")", Operations.VALIDSOL);
         /* Se calcula la media de aptitud actual y se obtiene del historico la de hace n generaciones. */
         double act = this.getPopulationMeanAptitude();
-        double past = this.getMean(this.generation - Main.getNumberOfGenerationsToCheck() - 1);
+        double past = this.getMean(this.generation - Main.getNumberOfGenerationsToCheck());
         this.debug("Aptitudes medias:", Operations.VALIDSOL);
         this.debug("\tGeneración actual: " + act, Operations.VALIDSOL);
         this.debug("\tHace " + Main.getNumberOfGenerationsToCheck() + " generaciones: " + past, Operations.VALIDSOL);
@@ -244,7 +253,7 @@ public class Population {
     }
 
     public void newGeneration() {
-        this.pastGenerationMeanAptitudes.put(this.generation, new Integer[]{this.getBest().getAptitude(), this.getPopulationMeanAptitude()});
+        this.pastGenerationMeanAptitudes.add(new GenerationValues(this.getBest().getAptitude(), this.getPopulationMeanAptitude()));
         ++this.generation;
     }
 

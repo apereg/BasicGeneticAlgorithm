@@ -1,6 +1,6 @@
 package com.adrip.ce.basicgeneticalgorithm;
 
-import com.adrip.ce.graphics.EvolutionGraphic;
+import com.adrip.ce.outputs.EvolutionGraphic;
 
 public class GeneticAlgorithm {
 
