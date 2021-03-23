@@ -7,8 +7,8 @@ import com.adrip.ce.utils.Utils;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Population {
@@ -103,7 +103,7 @@ public class Population {
             /* Se ordena la lista segun la aptitud de los cromosomas. */
             this.town = this.town.stream().sorted(Comparator.comparingInt(Chromosome::getAptitude).reversed()).collect(Collectors.toCollection(LinkedList::new));
             for (int i = 0; i < Main.getEliteSize(); i++) {
-                this.debug("Se añade a la nueva poblacion directamente el cromosoma " +this.town.getFirst().toString(), Operations.SELECT);
+                this.debug("Se añade a la nueva poblacion directamente el cromosoma " + this.town.getFirst().toString(), Operations.SELECT);
                 newTown.add(new Chromosome(this.town.removeFirst()));
             }
         }
@@ -112,8 +112,6 @@ public class Population {
         /* Se utilizan los valores absolutes de las aptitudes para facilitar los calculos. */
         int totalWeight = this.town.stream().mapToInt(Chromosome::getSelectAptitude).sum();
         this.debug("La suma de los valores absolutos de los pesos es " + totalWeight, Operations.SELECT);
-
-
         for (int i = 0; i < this.town.size(); i++) {
             /* Se gira la ruleta tantas veces como cromosomas tengamos para generar una nueva poblacion igual. */
             int value = Utils.generateRandom(0, totalWeight);
@@ -139,26 +137,51 @@ public class Population {
     }
 
     public void crossover() {
+        this.debug("\n------------------------------------*------------------------------------", Operations.CROSSOVER);
         this.debug("Va a comenzar el cruce de la población", Operations.CROSSOVER);
-        this.debug("El metodo escogido es el cruzamiento con un punto de corte", Operations.CROSSOVER);
+        this.debug("El metodo escogido es el cruzamiento con " + ((Main.getCrossoverPoints() == 1) ? "un punto de corte" : Main.getCrossoverPoints() + " puntos de corte"), Operations.CROSSOVER);
         for (int i = 0; i < Main.getNumChromosomes(); i += 2) {
-            this.debug("Se va a cruzar el cromosoma " + (i + 1) + " y " + (i + 2), Operations.CROSSOVER);
-            if ((i + 1) == this.town.size())
-                break;
-            int breakPoint = Utils.generateRandom(1, Main.getNumGenes() - 1);
-            this.debug("El punto de corte escogido es el gen " + breakPoint, Operations.CROSSOVER);
-            this.debug("Cromosomas antes de cruzar: " + this.town.get(i).toString() + " " + this.town.get(i + 1).toString(), Operations.CROSSOVER);
-            for (int j = breakPoint; j < Main.getNumGenes(); j++) {
-                this.debug("Cruzando el gen " + (j + 1), Operations.CROSSOVER);
-                int value = this.town.get(i + 1).getGene(j).getValue();
-                this.debug("Moviendo el gen del cromosoma " + (i + 2) + " al " + (i + 1), Operations.CROSSOVER);
-                this.town.get(i + 1).changeGene(j, this.town.get(i).getGene(j).getValue());
-                this.town.get(i).changeGene(j, value);
+            if (Utils.generateRandom(0, 99) < Main.getCrossoverProb()) {
+                if ((i + 1) == this.town.size())
+                    break;
+               List<Integer> breakPoints = this.generateBreakPoints();
+                this.debug("\nSe va a cruzar el cromosoma " + (i + 1) + " y " + (i + 2) + " (Puntos de corte: " + breakPoints.toString() + ")", Operations.CROSSOVER);
+                breakPoints.add(0, 0);
+                breakPoints.add(Main.getNumGenes());
+                this.debug("Cromosomas antes de cruzar: \t" + this.town.get(i).toString() + "\t" + this.town.get(i + 1).toString(), Operations.CROSSOVER);
+                for (int j = 0; j < breakPoints.size() - 1; j+=2) {
+                    for (int k = breakPoints.get(j); k < breakPoints.get(j+1); k++) {
+                        int value = this.town.get(i + 1).getGene(k).getValue();
+                        this.town.get(i + 1).changeGene(k, this.town.get(i).getGene(k).getValue());
+                        this.town.get(i).changeGene(k, value);
+                    }
+                }
+
+                this.debug("Cromosomas despues de cruzar: \t" + this.town.get(i).toString() + "\t" + this.town.get(i + 1).toString(), Operations.CROSSOVER);
+            } else {
+                this.debug("\nNo se van a cruzar el cromosoma " + (i + 1) + " y " + (i + 2) + " (La probabilidad de cruce es del " + Main.getCrossoverProb() + "%)", Operations.CROSSOVER);
             }
-            this.debug("Cromosomas despues de cruzar: " + this.town.get(i).toString() + " " + this.town.get(i + 1).toString(), Operations.CROSSOVER);
+
         }
-        /* Salto de linea para embellecer el resultado mostrado en la consola. */
-        this.debug("", Operations.CROSSOVER);
+        this.debug("------------------------------------*------------------------------------\n", Operations.CROSSOVER);
+    }
+
+    private List<Integer> generateBreakPoints() {
+        LinkedList<Integer> breakPoints = new LinkedList<>();
+        for (int i = 0; i < Main.getCrossoverPoints(); i++) {
+            boolean added = false;
+            int possiblePoint;
+            while (!added) {
+                possiblePoint = Utils.generateRandom(1, Main.getNumGenes() - 1);
+                if (!breakPoints.contains(possiblePoint)) {
+                    breakPoints.add(possiblePoint);
+                    added = true;
+                }
+            }
+        }
+        /* Se ordena la lista de menor a mayor */
+        breakPoints = breakPoints.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toCollection(LinkedList::new));
+        return breakPoints;
     }
 
     public void mutate() {

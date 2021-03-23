@@ -45,8 +45,7 @@ public class GeneticAlgorithm {
     }
 
     public void showEvolution() {
-
-        EvolutionGraphic e = new EvolutionGraphic(population);
+        new EvolutionGraphic(population);
     }
 
 }

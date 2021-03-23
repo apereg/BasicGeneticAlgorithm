@@ -7,10 +7,8 @@ import com.adrip.ce.utils.Mutations;
 public class Main {
 
     /* PARAMETROS MODIFICABLES. */
-
-    /* Valores numericos generales. */
-    private static final int CHROMOSOMES = 5;
-    private static final int GENES = 10;
+    private static final int CHROMOSOMES = 10;
+    private static final int GENES = 5;
     /* Debe tener las dimensiones acordes al numero de genes. */
     private static final int[][] GENE_RANGES = {{0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}};
 
@@ -18,14 +16,15 @@ public class Main {
 
     private static final boolean DEBUG_EVALUATE = false;
 
-    private static final boolean DEBUG_SELECT = true;
+    private static final boolean DEBUG_SELECT = false;
     private static final boolean ELITISM = true;
     private static final int ELITE_SIZE = 2;
 
-    private static final boolean DEBUG_CROSSOVER = false;
-    private static final int CROSSOVER_PROB = 90;
+    private static final boolean DEBUG_CROSSOVER = true;
+    private static final int CROSSOVER_PROB = 85;
+    /* En el intervalo [1, Numero de genes - 1] */
+    private static final int CROSSOVER_POINTS = 2;
 
-    /* Funcion MUTATE */
     private static final boolean DEBUG_MUTATE = false;
     /* El valor debe estar dentro del enum Mutations. */
     private static final Mutations MUTATION_TYPE = Mutations.PER_GENE;
@@ -35,20 +34,18 @@ public class Main {
     private static final int MUTATE_PROB_PER_GENE = 5;
 
     private static final boolean DEBUG_VALIDSOL = false;
-
     private static final boolean NUMBER_GENERATIONS_CONDITION = true;
-    private static final int GENERATIONS = 1;
+    private static final int GENERATIONS = 2;
     private static final boolean UPGRADE_GENERATIONS_CONDITION = false;
     private static final int NUMBER_OF_GENERATIONS_TO_CHECK = 50;
     /* Valor *100 (Ejemplo: 15 = 15%). */
     private static final int IMPROVEMENT_PERCENTAGE = 1;
 
-
     public static void main(String[] args) {
         GeneticAlgorithm algorithm = new GeneticAlgorithm(new Population());
         algorithm.run();
         algorithm.printSolution();
-        //algorithm.showEvolution();
+        algorithm.showEvolution();
     }
 
     public static int getNumGenerations() {
@@ -109,6 +106,10 @@ public class Main {
 
     public static int getCrossoverProb() {
         return CROSSOVER_PROB;
+    }
+
+    public static int getCrossoverPoints() {
+        return CROSSOVER_POINTS;
     }
 
     @SuppressWarnings("unused")
