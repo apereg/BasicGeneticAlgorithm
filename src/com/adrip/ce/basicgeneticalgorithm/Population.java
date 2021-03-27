@@ -1,6 +1,7 @@
 package com.adrip.ce.basicgeneticalgorithm;
 
 import com.adrip.ce.Main;
+import com.adrip.ce.exceptions.GeneticAlgorithmException;
 import com.adrip.ce.utils.Mutations;
 import com.adrip.ce.utils.Operations;
 import com.adrip.ce.utils.Utils;
@@ -17,9 +18,9 @@ public class Population {
 
     private int generation;
 
-    private LinkedList<GenerationValues> pastGenerationMeanAptitudes = new LinkedList<>();
+    private final LinkedList<GenerationValues> pastGenerationMeanAptitudes = new LinkedList<>();
 
-    public Population() {
+    public Population() throws GeneticAlgorithmException {
         this.town = new LinkedList<>();
         this.createPopulation();
     }
@@ -45,7 +46,8 @@ public class Population {
         return (int) this.town.stream().mapToInt(Chromosome::getAptitude).average().orElseThrow(IllegalStateException::new);
     }
 
-    private void createPopulation() {
+    private void createPopulation() throws GeneticAlgorithmException {
+        this.debug("------------------------------------*------------------------------------", Operations.CREATE);
         this.debug("Va a comenzar la creación de la población", Operations.CREATE);
         this.debug("El metodo escogido es la creación aleatoria", Operations.CREATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
@@ -66,35 +68,63 @@ public class Population {
             this.town.add(chromosome);
         }
         this.generation = 0;
-        /* Salto de linea para embellecer el resultado mostrado en la consola. */
-        this.debug("", Operations.CREATE);
+        this.debug("------------------------------------*------------------------------------\n", Operations.CREATE);
     }
 
-    public void evaluate() {
-        /* Se evalua un cromosoma como la suma de los valores de sus genes. */
+    public void evaluate() throws GeneticAlgorithmException {
+        this.debug("------------------------------------*------------------------------------", Operations.EVALUATE);
         this.debug("Se va a evaluar la poblacion", Operations.EVALUATE);
+        if (Main.getMastermind())
+            this.mastermindEvaluate();
+        else
+            this.normalEvaluate();
+        this.debug("------------------------------------*------------------------------------\n", Operations.EVALUATE);
+    }
+
+    private void mastermindEvaluate() throws GeneticAlgorithmException {
+        this.debug("El metodo escogido es el Mastermind como fue explicado en clase", Operations.EVALUATE);
+        int hits;
+        int faults;
+        int aptitude;
+        boolean foundSol = false;
+        this.debug("Solucion:\t" +GeneticAlgorithm.getSolutionRepresentation()+ " (Que no se entere el algoritmo)", Operations.EVALUATE);
+        for(Chromosome c: this.town){
+            hits = 0;
+            faults = 0;
+            for(int i = 0; i < Main.getNumGenes(); i++){
+                if(c.getGene(i).equals(GeneticAlgorithm.getSolution(i)))
+                    hits++;
+                else
+                    faults++;
+            }
+            aptitude = Utils.getMastermindAptitude(hits, faults);
+            this.debug("Evaluando:\t" +c.toString()+ " (B:" +hits+ ", N:" +faults+") -> Aptitud: " +aptitude, Operations.EVALUATE);
+            c.setAptitude(aptitude);
+            if(aptitude == Utils.getMaxMastermind())
+                foundSol = true;
+        }
+        if(foundSol){
+            System.out.println("El algoritmo ha ganado tras " +this.generation+ " generaciones, no esta nada mal");
+            GeneticAlgorithm.stop();
+
+        }
+    }
+
+    private void normalEvaluate() throws GeneticAlgorithmException {
+        /* Se evalua un cromosoma como la suma de los valores de sus genes. */
         this.debug("El metodo escogido es la suma de sus " + Main.getNumGenes() + " genes", Operations.EVALUATE);
         for (Chromosome c : this.town) {
-            this.debug("Evaluando el cromosoma " + c.toString(), Operations.EVALUATE);
             int aptitude = 0;
-            StringBuilder str = new StringBuilder("Sumando ");
-            for (int i = 0; i < Main.getNumGenes(); i++) {
-                /* Se va sumando la aptitud en un bucle. */
-                str.append(c.getGene(i).getValue()).append(" + ");
+            for (int i = 0; i < Main.getNumGenes(); i++)
                 aptitude += c.getGene(i).getValue();
-            }
-            /* Se borra el ultimo " + ". */
-            str.delete(str.length() - 3, str.length());
             /* Se guarda la aptitud dentro del objeto Cromosoma. */
             c.setAptitude(aptitude);
-            this.debug(str.append(" = ").append(aptitude).toString(), Operations.EVALUATE);
+            this.debug("Evaluando el cromosoma " + c.toString() + " -> " + aptitude, Operations.EVALUATE);
         }
-        /* Salto de linea para embellecer el resultado mostrado en la consola. */
-        this.debug("", Operations.EVALUATE);
     }
 
-    public void select() {
-        this.debug("\n------------------------------------*------------------------------------", Operations.SELECT);
+    public void select() throws GeneticAlgorithmException {
+        this.debug("------------------------------------*------------------------------------", Operations.SELECT);
         this.debug("Va a comenzar la selección de la población", Operations.SELECT);
         this.debug("El metodo escogido es la ruleta con pesos", Operations.SELECT);
         LinkedList<Chromosome> newTown = new LinkedList<>();
@@ -136,21 +166,21 @@ public class Population {
         this.debug("------------------------------------*------------------------------------\n", Operations.SELECT);
     }
 
-    public void crossover() {
-        this.debug("\n------------------------------------*------------------------------------", Operations.CROSSOVER);
+    public void crossover() throws GeneticAlgorithmException {
+        this.debug("------------------------------------*------------------------------------", Operations.CROSSOVER);
         this.debug("Va a comenzar el cruce de la población", Operations.CROSSOVER);
         this.debug("El metodo escogido es el cruzamiento con " + ((Main.getCrossoverPoints() == 1) ? "un punto de corte" : Main.getCrossoverPoints() + " puntos de corte"), Operations.CROSSOVER);
         for (int i = 0; i < Main.getNumChromosomes(); i += 2) {
             if (Utils.generateRandom(0, 99) < Main.getCrossoverProb()) {
                 if ((i + 1) == this.town.size())
                     break;
-               List<Integer> breakPoints = this.generateBreakPoints();
+                List<Integer> breakPoints = this.generateBreakPoints();
                 this.debug("\nSe va a cruzar el cromosoma " + (i + 1) + " y " + (i + 2) + " (Puntos de corte: " + breakPoints.toString() + ")", Operations.CROSSOVER);
                 breakPoints.add(0, 0);
                 breakPoints.add(Main.getNumGenes());
                 this.debug("Cromosomas antes de cruzar: \t" + this.town.get(i).toString() + "\t" + this.town.get(i + 1).toString(), Operations.CROSSOVER);
-                for (int j = 0; j < breakPoints.size() - 1; j+=2) {
-                    for (int k = breakPoints.get(j); k < breakPoints.get(j+1); k++) {
+                for (int j = 0; j < breakPoints.size() - 1; j += 2) {
+                    for (int k = breakPoints.get(j); k < breakPoints.get(j + 1); k++) {
                         int value = this.town.get(i + 1).getGene(k).getValue();
                         this.town.get(i + 1).changeGene(k, this.town.get(i).getGene(k).getValue());
                         this.town.get(i).changeGene(k, value);
@@ -184,17 +214,17 @@ public class Population {
         return breakPoints;
     }
 
-    public void mutate() {
+    public void mutate() throws GeneticAlgorithmException {
+        this.debug("------------------------------------*------------------------------------", Operations.MUTATE);
         this.debug("Va a comenzar la mutación de la población", Operations.MUTATE);
-        if (Main.getMutationType() == Mutations.PER_CHROMOSOME) {
+        if (Main.getMutationType() == Mutations.PER_CHROMOSOME)
             this.mutatePerChromosome();
-        } else {
-            /* Caso por gen */
+        else
             this.mutatePerGene();
-        }
+        this.debug("------------------------------------*------------------------------------\n", Operations.MUTATE);
     }
 
-    private void mutatePerChromosome() {
+    private void mutatePerChromosome() throws GeneticAlgorithmException {
         this.debug("El metodo escogido es la mutación por cromosoma", Operations.MUTATE);
         this.debug("La probabilidad de que un cromosoma mute es del " + Main.getMutateProbPerChromosome() + "%", Operations.MUTATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
@@ -210,7 +240,7 @@ public class Population {
         }
     }
 
-    private void mutatePerGene() {
+    private void mutatePerGene() throws GeneticAlgorithmException {
         this.debug("El metodo escogido es la mutación por gen", Operations.MUTATE);
         this.debug("La probabilidad de que un gen mute es del " + Main.getMutateProbPerGene() + "%", Operations.MUTATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
@@ -229,7 +259,7 @@ public class Population {
     }
 
     public boolean isValidSolution() {
-        this.debug("\n------------------------------------*------------------------------------", Operations.VALIDSOL);
+        this.debug("------------------------------------*------------------------------------", Operations.VALIDSOL);
         this.debug("Va a comenzar la validación de la solución:", Operations.VALIDSOL);
 
         boolean result = false;
@@ -276,7 +306,6 @@ public class Population {
     }
 
     public void newGeneration() {
-        this.pastGenerationMeanAptitudes.add(new GenerationValues(this.getBest().getAptitude(), this.getPopulationMeanAptitude()));
         ++this.generation;
     }
 
@@ -295,10 +324,13 @@ public class Population {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("Poblacion en generacion " + this.generation + ":\n");
+        StringBuilder str = new StringBuilder("Poblacion (Gen " + this.generation + ")\n");
         for (Chromosome c : this.town)
-            str.append(c.toString()).append("\n");
+            str.append("\t").append(c.toString()).append(" -> ").append(c.getAptitude()).append("\n");
         return str.deleteCharAt(str.length() - 1).toString();
     }
 
+    public void saveHistorical() {
+        this.pastGenerationMeanAptitudes.add(new GenerationValues(this.getBest().getAptitude(), this.getPopulationMeanAptitude()));
+    }
 }

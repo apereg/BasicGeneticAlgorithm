@@ -2,11 +2,11 @@ package com.adrip.ce.exceptions;
 
 import java.io.IOException;
 
-public class GeneticAlgorithmException extends IOException {
+public class ModifiableParameterException extends IOException {
 
     private static final long serialVersionUID = 1L;
 
-    public GeneticAlgorithmException(String message) {
+    public ModifiableParameterException(String message) {
         super(message);
     }
 

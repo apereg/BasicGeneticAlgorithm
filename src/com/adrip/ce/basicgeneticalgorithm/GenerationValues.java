@@ -2,11 +2,11 @@ package com.adrip.ce.basicgeneticalgorithm;
 
 public class GenerationValues {
 
-    private int bestAptitude;
+    private final int bestAptitude;
 
-    private int meanAptitude;
+    private final int meanAptitude;
 
-    public GenerationValues(int best, int mean){
+    public GenerationValues(int best, int mean) {
         this.bestAptitude = best;
         this.meanAptitude = mean;
     }

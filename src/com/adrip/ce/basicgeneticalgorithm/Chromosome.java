@@ -2,6 +2,7 @@ package com.adrip.ce.basicgeneticalgorithm;
 
 import com.adrip.ce.Main;
 import com.adrip.ce.exceptions.GeneticAlgorithmException;
+import com.adrip.ce.utils.Colors;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Chromosome {
         this.aptitude = Integer.MIN_VALUE;
     }
 
-    public Chromosome(Chromosome oldChromosome) {
+    public Chromosome(Chromosome oldChromosome) throws GeneticAlgorithmException {
         this.aptitude = oldChromosome.getAptitude();
         this.geneChain = new LinkedList<>();
         for (int i = 0; i < Main.getNumGenes(); i++) {
@@ -38,27 +39,27 @@ public class Chromosome {
         this.aptitude = aptitude;
     }
 
-    public void addGene(int value, int min, int max) {
+    public void addGene(int value, int min, int max) throws GeneticAlgorithmException {
         if (geneChain.size() >= Main.getNumGenes())
             throw new GeneticAlgorithmException("Se esta intentando añadir el gen " + this.geneChain.size() + " de un total de " + Main.getNumGenes() + "posibles");
         geneChain.add(new Gene(value, min, max));
     }
 
-    public Gene getGene(int pos) {
+    public Gene getGene(int pos) throws GeneticAlgorithmException {
         if (pos >= geneChain.size())
             throw new GeneticAlgorithmException(
                     "Se esta intentando obtener el gen " + pos + " de un total de " + this.geneChain.size() + "genes");
         return this.geneChain.get(pos);
     }
 
-    public void changeGene(int pos, int newValue) {
+    public void changeGene(int pos, int newValue) throws GeneticAlgorithmException {
         if (pos >= geneChain.size())
             throw new GeneticAlgorithmException(
                     "Se esta intentando cambiar el gen " + pos + " de un total de " + this.geneChain.size() + "genes");
         this.geneChain.get(pos).changeValue(newValue);
     }
 
-    public void mutateGene(int pos) {
+    public void mutateGene(int pos) throws GeneticAlgorithmException {
         if (pos >= geneChain.size())
             throw new GeneticAlgorithmException(
                     "Se esta intentando mutar el gen " + pos + " de un total de " + this.geneChain.size() + "genes");
@@ -67,11 +68,21 @@ public class Chromosome {
 
     @Override
     public String toString() {
+        return (Main.getMastermind() ? this.mastermindToString() : this.normalToString());
+    }
+
+    private String mastermindToString() {
+        StringBuilder str = new StringBuilder();
+        for (Gene gene : geneChain)
+            str.append("[").append(Colors.getColor(gene.getValue())).append(" ").append(Colors.RESET).append("] ");
+        return str.deleteCharAt(str.length() - 1).toString();
+    }
+
+    private String normalToString() {
         StringBuilder str = new StringBuilder("(");
         for (Gene gene : geneChain)
             str.append(gene.toString()).append("\t");
-        str.deleteCharAt(str.length() - 1).append(")");
-        return str.toString();
+        return str.deleteCharAt(str.length() - 1).append(")").toString();
     }
 
 }

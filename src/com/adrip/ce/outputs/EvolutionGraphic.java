@@ -11,8 +11,6 @@ import javax.swing.*;
 
 public class EvolutionGraphic extends JFrame {
 
-    JPanel pane;
-
     public EvolutionGraphic(Population population) {
         DefaultCategoryDataset aptitudes = new DefaultCategoryDataset();
         //DefaultCategoryDataset best = new DefaultCategoryDataset();
