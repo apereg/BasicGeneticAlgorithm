@@ -16,13 +16,17 @@ public class Population {
 
     private LinkedList<Chromosome> town;
 
-    private int generation;
-
     private final LinkedList<GenerationValues> pastGenerationMeanAptitudes = new LinkedList<>();
+
+    private int generation;
 
     public Population() throws GeneticAlgorithmException {
         this.town = new LinkedList<>();
         this.createPopulation();
+    }
+
+    public void newGeneration() {
+        ++this.generation;
     }
 
     public int getGeneration() {
@@ -37,13 +41,18 @@ public class Population {
         return this.pastGenerationMeanAptitudes.get(generation).getBestAptitude();
     }
 
+    public int getPopulationMeanAptitude() {
+        /* Se obtiene la media de aptitudes de los cromosomas de la lista. */
+        return (int) this.town.stream().mapToInt(Chromosome::getAptitude).average().orElseThrow(IllegalStateException::new);
+    }
+
     public Chromosome getBest() {
         /* Se comparan todas las aptitudes de la lista de la poblacion devolviendo el mejor cromosoma. */
         return this.town.stream().max(Comparator.comparing(Chromosome::getAptitude)).orElse(null);
     }
 
-    public int getPopulationMeanAptitude() {
-        return (int) this.town.stream().mapToInt(Chromosome::getAptitude).average().orElseThrow(IllegalStateException::new);
+    public void saveHistorical() {
+        this.pastGenerationMeanAptitudes.add(new GenerationValues(this.getBest().getAptitude(), this.getPopulationMeanAptitude()));
     }
 
     private void createPopulation() throws GeneticAlgorithmException {
@@ -81,35 +90,6 @@ public class Population {
         this.debug("------------------------------------*------------------------------------\n", Operations.EVALUATE);
     }
 
-    private void mastermindEvaluate() throws GeneticAlgorithmException {
-        this.debug("El metodo escogido es el Mastermind como fue explicado en clase", Operations.EVALUATE);
-        int hits;
-        int faults;
-        int aptitude;
-        boolean foundSol = false;
-        this.debug("Solucion:\t" +GeneticAlgorithm.getSolutionRepresentation()+ " (Que no se entere el algoritmo)", Operations.EVALUATE);
-        for(Chromosome c: this.town){
-            hits = 0;
-            faults = 0;
-            for(int i = 0; i < Main.getNumGenes(); i++){
-                if(c.getGene(i).equals(GeneticAlgorithm.getSolution(i)))
-                    hits++;
-                else
-                    faults++;
-            }
-            aptitude = Utils.getMastermindAptitude(hits, faults);
-            this.debug("Evaluando:\t" +c.toString()+ " (B:" +hits+ ", N:" +faults+") -> Aptitud: " +aptitude, Operations.EVALUATE);
-            c.setAptitude(aptitude);
-            if(aptitude == Utils.getMaxMastermind())
-                foundSol = true;
-        }
-        if(foundSol){
-            System.out.println("El algoritmo ha ganado tras " +this.generation+ " generaciones, no esta nada mal");
-            GeneticAlgorithm.stop();
-
-        }
-    }
-
     private void normalEvaluate() throws GeneticAlgorithmException {
         /* Se evalua un cromosoma como la suma de los valores de sus genes. */
         this.debug("El metodo escogido es la suma de sus " + Main.getNumGenes() + " genes", Operations.EVALUATE);
@@ -123,7 +103,36 @@ public class Population {
         }
     }
 
-    public void select() throws GeneticAlgorithmException {
+    private void mastermindEvaluate() throws GeneticAlgorithmException {
+        this.debug("El metodo escogido es el Mastermind como fue explicado en clase", Operations.EVALUATE);
+        int hits;
+        int faults;
+        int aptitude;
+        boolean foundSol = false;
+        this.debug("Solucion:\t" + GeneticAlgorithm.getSolutionRepresentation() + " (Que no se entere el algoritmo)", Operations.EVALUATE);
+        for (Chromosome c : this.town) {
+            hits = 0;
+            faults = 0;
+            for (int i = 0; i < Main.getNumGenes(); i++) {
+                if (c.getGene(i).equals(GeneticAlgorithm.getSolution(i)))
+                    hits++;
+                else
+                    faults++;
+            }
+            aptitude = Utils.getMastermindAptitude(hits, faults);
+            this.debug("Evaluando:\t" + c.toString() + " (B:" + hits + ", N:" + faults + ") -> Aptitud: " + aptitude, Operations.EVALUATE);
+            c.setAptitude(aptitude);
+            if (aptitude == Utils.getMaxMastermind())
+                foundSol = true;
+        }
+        if (foundSol) {
+            System.out.println("El algoritmo ha ganado tras " + this.generation + " generaciones, no esta nada mal");
+            GeneticAlgorithm.stop();
+
+        }
+    }
+
+    public void select() {
         this.debug("------------------------------------*------------------------------------", Operations.SELECT);
         this.debug("Va a comenzar la selección de la población", Operations.SELECT);
         this.debug("El metodo escogido es la ruleta con pesos", Operations.SELECT);
@@ -171,6 +180,7 @@ public class Population {
         this.debug("Va a comenzar el cruce de la población", Operations.CROSSOVER);
         this.debug("El metodo escogido es el cruzamiento con " + ((Main.getCrossoverPoints() == 1) ? "un punto de corte" : Main.getCrossoverPoints() + " puntos de corte"), Operations.CROSSOVER);
         for (int i = 0; i < Main.getNumChromosomes(); i += 2) {
+            /* Si se cumple la probabilidad especificada se producira el cruce. */
             if (Utils.generateRandom(0, 99) < Main.getCrossoverProb()) {
                 if ((i + 1) == this.town.size())
                     break;
@@ -179,6 +189,7 @@ public class Population {
                 breakPoints.add(0, 0);
                 breakPoints.add(Main.getNumGenes());
                 this.debug("Cromosomas antes de cruzar: \t" + this.town.get(i).toString() + "\t" + this.town.get(i + 1).toString(), Operations.CROSSOVER);
+                /* Para cada dos puntos de corte se cambian los valores de ambos cromosomas en los genes especificados. */
                 for (int j = 0; j < breakPoints.size() - 1; j += 2) {
                     for (int k = breakPoints.get(j); k < breakPoints.get(j + 1); k++) {
                         int value = this.town.get(i + 1).getGene(k).getValue();
@@ -197,11 +208,13 @@ public class Population {
     }
 
     private List<Integer> generateBreakPoints() {
+        /* Metodo que devuelve una lista con tantos puntos de corte como parametro se especifique en el Main */
         LinkedList<Integer> breakPoints = new LinkedList<>();
         for (int i = 0; i < Main.getCrossoverPoints(); i++) {
             boolean added = false;
             int possiblePoint;
             while (!added) {
+                /* Se generan posibles puntos de corte hasta que se encuentre uno que no se haya elegido ya. */
                 possiblePoint = Utils.generateRandom(1, Main.getNumGenes() - 1);
                 if (!breakPoints.contains(possiblePoint)) {
                     breakPoints.add(possiblePoint);
@@ -229,32 +242,35 @@ public class Population {
         this.debug("La probabilidad de que un cromosoma mute es del " + Main.getMutateProbPerChromosome() + "%", Operations.MUTATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
             if (Utils.generateRandom(0, 99) < Main.getMutateProbPerChromosome()) {
-                this.debug("El cromosoma " + (i + 1) + " va a mutar (Antes de mutar " + this.town.get(i).toString() + ")", Operations.MUTATE);
+                this.debug("Cromosoma " + (i + 1) + " antes de mutar:\t" + this.town.get(i).toString(), Operations.MUTATE);
                 int mutatePos = Utils.generateRandom(0, Main.getNumGenes() - 1);
                 this.debug("Va a mutar el gen " + (mutatePos + 1), Operations.MUTATE);
                 this.town.get(i).mutateGene(mutatePos);
-                this.debug("El cromosoma " + (i + 1) + " despues de mutar es " + this.town.get(i).toString(), Operations.MUTATE);
-            } else {
-                this.debug("El cromosoma " + (i + 1) + " no muta", Operations.MUTATE);
+                this.debug("Cromosoma " + (i + 1) + " despues de mutar:\t" + this.town.get(i).toString(), Operations.MUTATE);
             }
         }
     }
 
     private void mutatePerGene() throws GeneticAlgorithmException {
+        boolean muted;
         this.debug("El metodo escogido es la mutación por gen", Operations.MUTATE);
         this.debug("La probabilidad de que un gen mute es del " + Main.getMutateProbPerGene() + "%", Operations.MUTATE);
         for (int i = 0; i < Main.getNumChromosomes(); i++) {
-            this.debug("Cromosoma " + (i + 1) + " antes de mutar " + this.town.get(i).toString(), Operations.MUTATE);
-            this.debug("Comprobando si los genes tienen que mutar...", Operations.MUTATE);
+            this.debug("Cromosoma " + (i + 1) + " antes de mutar:\t" + this.town.get(i).toString(), Operations.MUTATE);
+            muted = false;
             for (int j = 0; j < Main.getNumGenes(); j++) {
                 /* Se recorren todos los genes de cada cromosoma comprobando con un numero aleatorio si tiene que mutar. */
                 if (Utils.generateRandom(0, 99) < Main.getMutateProbPerGene()) {
                     this.debug("Muta el gen " + (j + 1), Operations.MUTATE);
                     /* La responsabilidad de mutar se delega en el gen (Conoce su minimo y maximo). */
                     this.town.get(i).mutateGene(j);
+                    muted = true;
                 }
             }
-            this.debug("Cromosoma " + (i + 1) + " despues de mutar " + this.town.get(i).toString(), Operations.MUTATE);
+            if (muted)
+                this.debug("Cromosoma " + (i + 1) + " despues de mutar:\t" + this.town.get(i).toString(), Operations.MUTATE);
+            else
+                this.debug("El cromosoma " + (i + 1) + " no ha mutado", Operations.MUTATE);
         }
     }
 
@@ -305,10 +321,6 @@ public class Population {
         return false;
     }
 
-    public void newGeneration() {
-        ++this.generation;
-    }
-
     private void debug(String text, Operations operation) {
         /* Se formatea el nombre del metodo con getDebug y el enum con la primera letra mayuscula. */
         String methodName = "getDebug" + operation.toString().charAt(0) + operation.toString().substring(1).toLowerCase();
@@ -325,12 +337,10 @@ public class Population {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("Poblacion (Gen " + this.generation + ")\n");
+        /* Se guarda en el string cada cromosoma con su aptitud. */
         for (Chromosome c : this.town)
             str.append("\t").append(c.toString()).append(" -> ").append(c.getAptitude()).append("\n");
         return str.deleteCharAt(str.length() - 1).toString();
     }
 
-    public void saveHistorical() {
-        this.pastGenerationMeanAptitudes.add(new GenerationValues(this.getBest().getAptitude(), this.getPopulationMeanAptitude()));
-    }
 }

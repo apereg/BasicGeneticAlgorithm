@@ -7,6 +7,7 @@ public class GenerationValues {
     private final int meanAptitude;
 
     public GenerationValues(int best, int mean) {
+        /* Objeto encapsulador de los datos historicos de una generacion. */
         this.bestAptitude = best;
         this.meanAptitude = mean;
     }

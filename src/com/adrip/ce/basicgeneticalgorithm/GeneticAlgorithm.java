@@ -21,24 +21,17 @@ public class GeneticAlgorithm {
         this.population = population;
     }
 
-    public static Gene getSolution(int index) throws GeneticAlgorithmException {
-        return GeneticAlgorithm.mastermindSolution.getGene(index);
-    }
-
-    public static String getSolutionRepresentation(){
-        return GeneticAlgorithm.mastermindSolution.toString();
-    }
-
     public void run() throws GeneticAlgorithmException {
         System.out.println("\nComienza el algoritmo genetico");
         /* En caso de estar jugando mastermind se genera una solucion aleatoria. */
-        if(Main.getMastermind()){
+        if (Main.getMastermind()) {
             GeneticAlgorithm.mastermindSolution = new Chromosome();
             for (int i = 0; i < Main.getNumGenes(); i++)
-                GeneticAlgorithm.mastermindSolution.addGene(Utils.generateRandom(0,5), 0, 5);
-            System.out.println("La solucion es " +mastermindSolution.toString()+ " (No se la digas al algoritmo)");
+                GeneticAlgorithm.mastermindSolution.addGene(Utils.generateRandom(0, 5), 0, 5);
+            System.out.println("La solucion es " + mastermindSolution.toString() + " (No se la digas al algoritmo)");
         }
 
+        /* Estructura del algoritmo genetico. */
         population.evaluate();
         System.out.println(population.toString() + "\n");
         Chromosome bestGenerationChromosome;
@@ -63,18 +56,25 @@ public class GeneticAlgorithm {
 
     }
 
-    public static void stop(){
+    public static void stop() {
         solved = true;
     }
 
     public void printSolution() {
-        System.out.println(population.toString());
-        System.out.println();
+        System.out.println(population.toString() + "\n");
         System.out.println("El mejor cromosoma fue obtenido en la generacion " + bestChromosomeGeneration + ", tenia aptitud " + bestChromosome.getAptitude() + " y una composicion " + bestChromosome.toString());
     }
 
     public void showEvolution() {
         new EvolutionGraphic(this.population);
+    }
+
+    public static Gene getSolution(int index) throws GeneticAlgorithmException {
+        return GeneticAlgorithm.mastermindSolution.getGene(index);
+    }
+
+    public static String getSolutionRepresentation() {
+        return GeneticAlgorithm.mastermindSolution.toString();
     }
 
 }

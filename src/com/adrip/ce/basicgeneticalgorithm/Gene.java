@@ -7,11 +7,11 @@ import java.util.Objects;
 
 public class Gene {
 
-    private int value;
-
     private final int min;
 
     private final int max;
+
+    private int value;
 
     public Gene(int value, int min, int max) {
         this.value = value;
@@ -34,6 +34,8 @@ public class Gene {
     public void changeValue(int newValue) throws GeneticAlgorithmException {
         if (newValue < this.min || newValue > this.max)
             throw new GeneticAlgorithmException("Se esta intentando cambiar el valor del gen a " + newValue + "(Debe estar en [" + this.min + ", " + this.max + "])");
+
+        /* Si el valor esta dentro de sus limites se cambia. */
         this.value = newValue;
     }
 
@@ -43,9 +45,10 @@ public class Gene {
 
     @Override
     public boolean equals(Object o) {
+        /* Para comparar dos genes se comparan sus valores. */
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-            Gene gene = (Gene) o;
+        Gene gene = (Gene) o;
         return this.value == gene.value;
     }
 

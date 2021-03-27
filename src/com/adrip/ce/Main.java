@@ -60,7 +60,7 @@ public class Main {
             Main.GENES = 4;
             Main.GENE_RANGES = new int[][]{{0, 5}, {0, 5}, {0, 5}, {0, 5}};
             System.out.println(Colors.GREEN + "El " + Colors.RED + "modo mastermind"
-                    +Colors.GREEN+ " esta activado (Los genes han sido cambiados a 4 con rangos (0-5))");
+                    + Colors.GREEN + " esta activado (Los genes han sido cambiados a 4 con rangos (0-5))");
         }
 
         /* Se comprueban todos los parametros en busca de inconsistencias. */
