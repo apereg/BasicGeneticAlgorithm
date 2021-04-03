@@ -11,7 +11,7 @@ public class Main {
 
     /* PARAMETROS MODIFICABLES. */
     private static final boolean MASTERMIND = true;
-    private static final int CHROMOSOMES = 4;
+    private static final int CHROMOSOMES = 10;
     private static int GENES = 10;
     /* Debe tener las dimensiones acordes al numero de genes. */
     private static int[][] GENE_RANGES = {{0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}, {0, 100}};
@@ -45,12 +45,21 @@ public class Main {
     /* Valor *100 (Ejemplo: 15 = 15%). */
     private static final int IMPROVEMENT_PERCENTAGE = 1;
 
+    private static final boolean GENERATE_GRAPHIC = true;
+    private static final boolean SAVE_GRAPHIC = true;
+
     public static void main(String[] args) throws GeneticAlgorithmException, ModifiableParameterException {
-        checkParams();
+        long start = System.currentTimeMillis();
+
+        Main.checkParams();
         GeneticAlgorithm algorithm = new GeneticAlgorithm(new Population());
         algorithm.run();
         algorithm.printSolution();
-        algorithm.showEvolution();
+        if (Main.GENERATE_GRAPHIC)
+            algorithm.showEvolution();
+
+        long time = System.currentTimeMillis() - start;
+        System.out.println("\nEl algoritmo ha tardado " + time + " ms.");
     }
 
     private static void checkParams() throws ModifiableParameterException {
@@ -95,6 +104,8 @@ public class Main {
             exceptions.append("\tEl numero de generaciones debe ser al menos 1\n");
         if (Main.UPGRADE_GENERATIONS_CONDITION && Main.IMPROVEMENT_PERCENTAGE < 1)
             exceptions.append("\tEl porcentaje de mejora de la poblacion no puede ser menor que 1\n");
+        if (!Main.GENERATE_GRAPHIC && Main.SAVE_GRAPHIC)
+            exceptions.append("\tLa opcion de guardar graficos esta activada mientras que la generacion esta desactivada\n");
 
         /* Si alguno de los parametros es inconsistente se muestra la información como excepcion. */
         if (exceptions.length() != 0)
@@ -176,6 +187,14 @@ public class Main {
 
     public static int getImprovementPercentage() {
         return IMPROVEMENT_PERCENTAGE;
+    }
+
+    public static boolean getGenerateGraphic() {
+        return Main.GENERATE_GRAPHIC;
+    }
+
+    public static boolean getSaveGraphic() {
+        return Main.SAVE_GRAPHIC;
     }
 
     @SuppressWarnings("unused")

@@ -16,7 +16,7 @@ public class Population {
 
     private LinkedList<Chromosome> town;
 
-    private final LinkedList<GenerationValues> pastGenerationMeanAptitudes = new LinkedList<>();
+    private final LinkedList<GenerationValues> historical = new LinkedList<>();
 
     private int generation;
 
@@ -34,11 +34,11 @@ public class Population {
     }
 
     public int getMean(int generation) {
-        return this.pastGenerationMeanAptitudes.get(generation).getMeanAptitude();
+        return this.historical.get(generation).getMean();
     }
 
     public int getBest(int generation) {
-        return this.pastGenerationMeanAptitudes.get(generation).getBestAptitude();
+        return this.historical.get(generation).getBest();
     }
 
     public int getPopulationMeanAptitude() {
@@ -52,7 +52,7 @@ public class Population {
     }
 
     public void saveHistorical() {
-        this.pastGenerationMeanAptitudes.add(new GenerationValues(this.getBest().getAptitude(), this.getPopulationMeanAptitude()));
+        this.historical.add(new GenerationValues(this.getBest().getAptitude(), this.getPopulationMeanAptitude()));
     }
 
     private void createPopulation() throws GeneticAlgorithmException {
@@ -343,4 +343,7 @@ public class Population {
         return str.deleteCharAt(str.length() - 1).toString();
     }
 
+    public List<GenerationValues> getHistorical() {
+        return this.historical;
+    }
 }

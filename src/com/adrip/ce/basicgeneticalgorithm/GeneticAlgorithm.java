@@ -66,7 +66,7 @@ public class GeneticAlgorithm {
     }
 
     public void showEvolution() {
-        new EvolutionGraphic(this.population);
+        new EvolutionGraphic(this.population.getHistorical());
     }
 
     public static Gene getSolution(int index) throws GeneticAlgorithmException {

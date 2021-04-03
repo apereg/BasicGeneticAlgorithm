@@ -2,22 +2,22 @@ package com.adrip.ce.basicgeneticalgorithm;
 
 public class GenerationValues {
 
-    private final int bestAptitude;
+    private final int best;
 
-    private final int meanAptitude;
+    private final int mean;
 
     public GenerationValues(int best, int mean) {
         /* Objeto encapsulador de los datos historicos de una generacion. */
-        this.bestAptitude = best;
-        this.meanAptitude = mean;
+        this.best = best;
+        this.mean = mean;
     }
 
-    public int getBestAptitude() {
-        return this.bestAptitude;
+    public int getBest() {
+        return this.best;
     }
 
-    public int getMeanAptitude() {
-        return this.meanAptitude;
+    public int getMean() {
+        return this.mean;
     }
 
 }
