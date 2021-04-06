@@ -49,8 +49,8 @@ public class EvolutionGraphic extends JFrame {
             try {
                 /* Se intenta crear el directorio graphics en la raiz del proyecto si no existe. */
                 File f = new File("graphics/");
-                if(!f.exists())
-                    if(!f.mkdir())
+                if (!f.exists())
+                    if (!f.mkdir())
                         throw new IOException();
                 f = new File("graphics/" + (Main.getMastermind() ? "Mastermind" : "AAGG") + new SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(date) + ".png");
                 ChartUtils.saveChartAsPNG(f, chart, 1920, 1080);

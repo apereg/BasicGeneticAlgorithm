@@ -6,6 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
 
+    /* Constructor privado ya que es una clase de utilidad. */
     private Utils() {
     }
 

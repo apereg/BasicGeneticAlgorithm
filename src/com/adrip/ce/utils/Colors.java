@@ -2,7 +2,7 @@ package com.adrip.ce.utils;
 
 public class Colors {
 
-    /* Color codes. */
+    /* Codigos de color. */
     public static final String RED = "\033[0;31m";
     public static final String GREEN = "\033[0;32m";
     public static final String YELLOW = "\033[0;33m";
@@ -20,6 +20,10 @@ public class Colors {
     public static final String BLACK_BACKGROUND = "\033[0;100m";
     public static final String WHITE_BACKGROUND = "\033[0;107m";
     public static final String RESET = "\033[0m";
+
+    /* Constructor privado ya que es una clase de utilidad. */
+    private Colors() {
+    }
 
     public static String getColor(int number) {
         switch (number) {

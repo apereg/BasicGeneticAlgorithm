@@ -49,6 +49,7 @@ public class Main {
     private static final boolean SAVE_GRAPHIC = true;
 
     public static void main(String[] args) throws GeneticAlgorithmException, ModifiableParameterException {
+        /* Se mide el tiempo para comprobar rendimientos. */
         long start = System.currentTimeMillis();
 
         Main.checkParams();
@@ -59,7 +60,7 @@ public class Main {
             algorithm.showEvolution();
 
         long time = System.currentTimeMillis() - start;
-        System.out.println("\nEl algoritmo ha tardado " + time + " ms.");
+        System.out.println("\nEl algoritmo ha tardado " + Colors.GREEN + time + Colors.RESET + "ms.");
     }
 
     private static void checkParams() throws ModifiableParameterException {
